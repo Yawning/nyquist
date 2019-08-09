@@ -1,4 +1,6 @@
-package nyquist
+// Package hash implments the Noise Protocol Framework hash function abstract
+// interface and standard hash functions.
+package hash
 
 import (
 	"crypto/sha256"
@@ -9,24 +11,6 @@ import (
 	"golang.org/x/crypto/blake2b"
 	"golang.org/x/crypto/blake2s"
 )
-
-var supportedHashes = map[string]Hash{
-	"SHA256":  SHA256,
-	"SHA512":  SHA512,
-	"BLAKE2s": BLAKE2s,
-	"BLAKE2b": BLAKE2b,
-}
-
-// Hash is a collision-resistant cryptographic hash function factory.
-type Hash interface {
-	fmt.Stringer
-
-	// New constructs a new `hash.Hash` instance.
-	New() hash.Hash
-
-	// Size returns the hash function's digest size in bytes (`HASHLEN`).
-	Size() int
-}
 
 var (
 	// SHA256 is the SHA256 hash function.
@@ -40,7 +24,30 @@ var (
 
 	// BLAKE2b is the BLAKE2b hash function.
 	BLAKE2b Hash = &hashBlake2b{}
+
+	supportedHashes = map[string]Hash{
+		"SHA256":  SHA256,
+		"SHA512":  SHA512,
+		"BLAKE2s": BLAKE2s,
+		"BLAKE2b": BLAKE2b,
+	}
 )
+
+// Hash is a collision-resistant cryptographic hash function factory.
+type Hash interface {
+	fmt.Stringer
+
+	// New constructs a new `hash.Hash` instance.
+	New() hash.Hash
+
+	// Size returns the hash function's digest size in bytes (`HASHLEN`).
+	Size() int
+}
+
+// FromString returns a Hash by algorithm name, or nil.
+func FromString(s string) Hash {
+	return supportedHashes[s]
+}
 
 type hashSha256 struct{}
 

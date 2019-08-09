@@ -1,7 +1,11 @@
 // Package nyquist implements the Noise Protocol Framework.
 package nyquist
 
-import "errors"
+import (
+	"errors"
+
+	"gitlab.com/yawning/nyquist.git/internal"
+)
 
 // Version is the revision of the Noise specification implemented.
 const Version = 34
@@ -17,18 +21,6 @@ var (
 
 	// ErrOpen is the error returned on a authenticated decryption failure.
 	ErrOpen = errors.New("nyquist: decryption failure")
-
-	// ErrMalformedPrivateKey is the error returned when a serialized
-	// private key is malformed.
-	ErrMalformedPrivateKey = errors.New("nyquist: malformed private key")
-
-	// ErrMalformedPublicKey is the error returned when a serialized public
-	// key is malformed.
-	ErrMalformedPublicKey = errors.New("nyquist: malformed public key")
-
-	// ErrMismatchedPublicKey is the error returned when a public key for an
-	// unexpected algorithm is provided to a DH calculation.
-	ErrMismatchedPublicKey = errors.New("nyquist: mismatched public key")
 
 	// ErrInvalidConfig is the error returned when the configuration is invalid.
 	ErrInvalidConfig = errors.New("nyquist: invalid configuration")
@@ -46,21 +38,6 @@ var (
 	ErrProtocolNotSupported = errors.New("nyquist: protocol not supported")
 )
 
-// Resetable is the interface implemented by objects capable of sanitizing
-// themselves.
-//
-// Warning: In some cases this is strictly a best-effort process.
-type Resetable interface {
-	// Reset clears the object of sensitive data.
-	Reset()
-}
-
-func explicitBzero(b []byte) {
-	for i := range b {
-		b[i] = 0
-	}
-}
-
 func truncateTo32Bytes(b []byte) []byte {
 	if len(b) <= 32 {
 		return b
@@ -68,7 +45,7 @@ func truncateTo32Bytes(b []byte) []byte {
 
 	var tail []byte
 	b, tail = b[:32], b[32:]
-	explicitBzero(tail)
+	internal.ExplicitBzero(tail)
 
 	return b
 }

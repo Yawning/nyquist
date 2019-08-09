@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"gitlab.com/yawning/nyquist.git/dh"
 	"gitlab.com/yawning/nyquist.git/vectors"
 )
 
@@ -171,17 +172,17 @@ func configsFromVector(t *testing.T, v *vectors.Vector) (*HandshakeConfig, *Hand
 	require.Equal(v.ProtocolName, protocol.String(), "derived protocol name matches test case")
 
 	// Initiator side.
-	var initStatic Keypair
+	var initStatic dh.Keypair
 	if len(v.InitStatic) != 0 {
 		initStatic = mustParsePrivateKey(t, protocol.DH, v.InitStatic)
 	}
 
-	var initEphemeral Keypair
+	var initEphemeral dh.Keypair
 	if len(v.InitEphemeral) != 0 {
 		initEphemeral = mustParsePrivateKey(t, protocol.DH, v.InitEphemeral)
 	}
 
-	var initRemoteStatic PublicKey
+	var initRemoteStatic dh.PublicKey
 	if len(v.InitRemoteStatic) != 0 {
 		initRemoteStatic, err = protocol.DH.ParsePublicKey(v.InitRemoteStatic)
 		require.NoError(err, "parse InitRemoteStatic")
@@ -203,17 +204,17 @@ func configsFromVector(t *testing.T, v *vectors.Vector) (*HandshakeConfig, *Hand
 	}
 
 	// Responder side.
-	var respStatic Keypair
+	var respStatic dh.Keypair
 	if len(v.RespStatic) != 0 {
 		respStatic = mustParsePrivateKey(t, protocol.DH, v.RespStatic)
 	}
 
-	var respEphemeral Keypair
+	var respEphemeral dh.Keypair
 	if len(v.RespEphemeral) != 0 {
 		respEphemeral = mustParsePrivateKey(t, protocol.DH, v.RespEphemeral)
 	}
 
-	var respRemoteStatic PublicKey
+	var respRemoteStatic dh.PublicKey
 	if len(v.RespRemoteStatic) != 0 {
 		respRemoteStatic, err = protocol.DH.ParsePublicKey(v.RespRemoteStatic)
 		require.NoError(err, "parse RespRemoteStatic")
@@ -237,13 +238,12 @@ func configsFromVector(t *testing.T, v *vectors.Vector) (*HandshakeConfig, *Hand
 	return initCfg, respCfg
 }
 
-func mustParsePrivateKey(t *testing.T, dh DH, raw []byte) Keypair {
+func mustParsePrivateKey(t *testing.T, dhImpl dh.DH, raw []byte) dh.Keypair {
 	require := require.New(t)
 
-	var isType *dh25519
-	require.IsType(isType, dh, "dh is X25519")
+	require.Equal(dhImpl.String(), "25519", "dh is X25519")
 
-	var kp Keypair25519
+	var kp dh.Keypair25519
 	err := kp.UnmarshalBinary(raw)
 	require.NoError(err, "parse X25519 private key")
 

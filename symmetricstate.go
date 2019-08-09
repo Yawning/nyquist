@@ -4,6 +4,10 @@ import (
 	"io"
 
 	"golang.org/x/crypto/hkdf"
+
+	"gitlab.com/yawning/nyquist.git/cipher"
+	"gitlab.com/yawning/nyquist.git/hash"
+	"gitlab.com/yawning/nyquist.git/internal"
 )
 
 // SymmetricState encapsulates all symmetric cryptography used by the Noise
@@ -11,8 +15,8 @@ import (
 //
 // Warning: There should be no reason to interact directly with this ever.
 type SymmetricState struct {
-	cipher Cipher
-	hash   Hash
+	cipher cipher.Cipher
+	hash   hash.Hash
 
 	cs *CipherState
 
@@ -49,7 +53,7 @@ func (ss *SymmetricState) MixKey(inputKeyMaterial []byte) {
 	tempK = truncateTo32Bytes(tempK)
 	ss.cs.InitializeKey(tempK)
 
-	explicitBzero(tempK)
+	internal.ExplicitBzero(tempK)
 }
 
 // MixHash mixes the provided data with the handshake hash.
@@ -72,7 +76,7 @@ func (ss *SymmetricState) MixKeyAndHash(inputKeyMaterial []byte) {
 	tempK = truncateTo32Bytes(tempK)
 	ss.cs.InitializeKey(tempK)
 
-	explicitBzero(tempK)
+	internal.ExplicitBzero(tempK)
 }
 
 // GetHandshakeHash returns the handshake hash `h`.
@@ -119,8 +123,8 @@ func (ss *SymmetricState) Split() (*CipherState, *CipherState) {
 	c1.InitializeKey(tempK1)
 	c2.InitializeKey(tempK2)
 
-	explicitBzero(tempK1)
-	explicitBzero(tempK2)
+	internal.ExplicitBzero(tempK1)
+	internal.ExplicitBzero(tempK2)
 
 	return c1, c2
 }
@@ -158,7 +162,7 @@ func (ss *SymmetricState) Reset() {
 	// `Reset()` to be called immediately after `Split()` while preserving
 	// the ability to call `GetHandshakeHash()`.
 	if ss.ck != nil {
-		explicitBzero(ss.ck)
+		internal.ExplicitBzero(ss.ck)
 		ss.ck = nil
 	}
 	if ss.cs != nil {
@@ -167,7 +171,7 @@ func (ss *SymmetricState) Reset() {
 	}
 }
 
-func newSymmetricState(cipher Cipher, hash Hash, maxMessageSize int) *SymmetricState {
+func newSymmetricState(cipher cipher.Cipher, hash hash.Hash, maxMessageSize int) *SymmetricState {
 	return &SymmetricState{
 		cipher:  cipher,
 		hash:    hash,

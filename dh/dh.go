@@ -1,16 +1,35 @@
-package nyquist
+// Package dh implments the Noise Protocol Framework Diffie-Hellman function
+// abstract interface and standard hash functions.
+package dh
 
 import (
 	"encoding"
+	"errors"
 	"fmt"
 	"io"
 
 	"github.com/oasislabs/ed25519/extra/x25519"
+
+	"gitlab.com/yawning/nyquist.git/internal"
 )
 
-var supportedDHs = map[string]DH{
-	"25519": X25519,
-}
+var (
+	// ErrMalformedPrivateKey is the error returned when a serialized
+	// private key is malformed.
+	ErrMalformedPrivateKey = errors.New("nyquist/dh: malformed private key")
+
+	// ErrMalformedPublicKey is the error returned when a serialized public
+	// key is malformed.
+	ErrMalformedPublicKey = errors.New("nyquist/dh: malformed public key")
+
+	// ErrMismatchedPublicKey is the error returned when a public key for an
+	// unexpected algorithm is provided to a DH calculation.
+	ErrMismatchedPublicKey = errors.New("nyquist/dh: mismatched public key")
+
+	supportedDHs = map[string]DH{
+		"25519": X25519,
+	}
+)
 
 // DH is a Diffie-Hellman key exchange algorithm.
 type DH interface {
@@ -27,12 +46,18 @@ type DH interface {
 	Size() int
 }
 
-// Keypair is a Diffile-Hellman keypair.
+// FromString returns a DH by algorithm name, or nil.
+func FromString(s string) DH {
+	return supportedDHs[s]
+}
+
+// Keypair is a Diffie-Hellman keypair.
 type Keypair interface {
 	encoding.BinaryMarshaler
 	encoding.BinaryUnmarshaler
 
-	Resetable
+	// Reset clears the object of sensitive data.
+	Reset()
 
 	// Public returns the public key of the keypair.
 	Public() PublicKey
@@ -133,7 +158,7 @@ func (kp *Keypair25519) DH(publicKey PublicKey) ([]byte, error) {
 
 // Reset clears the keypair of sensitive data.
 func (kp *Keypair25519) Reset() {
-	explicitBzero(kp.rawPrivateKey[:])
+	internal.ExplicitBzero(kp.rawPrivateKey[:])
 }
 
 // PublicKey25519 is a X25519 public key.

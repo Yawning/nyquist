@@ -6,6 +6,12 @@ import (
 	"fmt"
 	"io"
 	"strings"
+
+	"gitlab.com/yawning/nyquist.git/cipher"
+	"gitlab.com/yawning/nyquist.git/dh"
+	"gitlab.com/yawning/nyquist.git/hash"
+	"gitlab.com/yawning/nyquist.git/internal"
+	"gitlab.com/yawning/nyquist.git/pattern"
 )
 
 const (
@@ -20,11 +26,11 @@ const (
 
 // Protocol is a the protocol to be used with a handshake.
 type Protocol struct {
-	Pattern HandshakePattern
+	Pattern pattern.Pattern
 
-	DH     DH
-	Cipher Cipher
-	Hash   Hash
+	DH     dh.DH
+	Cipher cipher.Cipher
+	Hash   hash.Hash
 }
 
 // String returns the string representation of the protocol name.
@@ -40,7 +46,8 @@ func (pr *Protocol) String() string {
 }
 
 // NewProtocol returns a Protocol from the provided (case-sensitive) protocol
-// name.
+// name.  Returned protocol objects may be reused across multiple
+// HandshakeConfigs.
 //
 // Note: Only protocols that can be built with the built-in crypto and patterns
 // are supported.  Using custom crypto/patterns will require manually building
@@ -52,10 +59,10 @@ func NewProtocol(s string) (*Protocol, error) {
 	}
 
 	var protocol Protocol
-	protocol.Pattern = supportedPatterns[parts[1]]
-	protocol.DH = supportedDHs[parts[2]]
-	protocol.Cipher = supportedCiphers[parts[3]]
-	protocol.Hash = supportedHashes[parts[4]]
+	protocol.Pattern = pattern.FromString(parts[1])
+	protocol.DH = dh.FromString(parts[2])
+	protocol.Cipher = cipher.FromString(parts[3])
+	protocol.Hash = hash.FromString(parts[4])
 
 	if protocol.Pattern == nil || protocol.DH == nil || protocol.Cipher == nil || protocol.Hash == nil {
 		return nil, ErrProtocolNotSupported
@@ -81,16 +88,16 @@ type HandshakeConfig struct {
 	Prologue []byte
 
 	// LocalStatic is the local static keypair, if any (`s`).
-	LocalStatic Keypair
+	LocalStatic dh.Keypair
 
 	// LocalEphemeral is the local ephemeral keypair, if any (`e`).
-	LocalEphemeral Keypair
+	LocalEphemeral dh.Keypair
 
 	// RemoteStatic is the remote static public key, if any (`rs`).
-	RemoteStatic PublicKey
+	RemoteStatic dh.PublicKey
 
 	// RemoteEphemeral is the remote ephemeral public key, if any (`re`).
-	RemoteEphemeral PublicKey
+	RemoteEphemeral dh.PublicKey
 
 	// PreSharedKey is the pre-shared symmetric key for PSK mode handshakes.
 	PreSharedKey []byte
@@ -128,13 +135,13 @@ type HandshakeStatus struct {
 	Err error
 
 	// LocalEphemeral is the local ephemeral public key, if any (`e`).
-	LocalEphemeral PublicKey
+	LocalEphemeral dh.PublicKey
 
 	// RemoteStatic is the remote static public key, if any (`rs`).
-	RemoteStatic PublicKey
+	RemoteStatic dh.PublicKey
 
 	// RemoteEphemeral is the remote ephemeral public key, if any (`re`).
-	RemoteEphemeral PublicKey
+	RemoteEphemeral dh.PublicKey
 
 	// CipherStates is the resulting CipherState pair (`(cs1, cs2)`).
 	//
@@ -149,11 +156,11 @@ type HandshakeStatus struct {
 // HandshakeObserver is a handshake observer for monitoring handshake status.
 type HandshakeObserver interface {
 	// OnPeerPublicKey will be called when a public key is received from
-	// the peer, with the handshake pattern token (`Token_e`, `Token_s`)
-	// and public key.
+	// the peer, with the handshake pattern token (`pattern.Token_e`,
+	// `pattern.Token_s`) and public key.
 	//
 	// Returning a non-nil error will abort the handshake immediately.
-	OnPeerPublicKey(Token, PublicKey) error
+	OnPeerPublicKey(pattern.Token, dh.PublicKey) error
 }
 
 func (cfg *HandshakeConfig) getRng() io.Reader {
@@ -177,15 +184,15 @@ func (cfg *HandshakeConfig) getMaxMessageSize() int {
 type HandshakeState struct {
 	cfg *HandshakeConfig
 
-	dh       DH
-	patterns []MessagePattern
+	dh       dh.DH
+	patterns []pattern.Message
 
 	ss *SymmetricState
 
-	s  Keypair
-	e  Keypair
-	rs PublicKey
-	re PublicKey
+	s  dh.Keypair
+	e  dh.Keypair
+	rs dh.PublicKey
+	re dh.PublicKey
 
 	status *HandshakeStatus
 
@@ -264,7 +271,7 @@ func (hs *HandshakeState) onReadTokenE(payload []byte) []byte {
 	}
 	hs.status.RemoteEphemeral = hs.re
 	if hs.cfg.Observer != nil {
-		if hs.status.Err = hs.cfg.Observer.OnPeerPublicKey(Token_e, hs.re); hs.status.Err != nil {
+		if hs.status.Err = hs.cfg.Observer.OnPeerPublicKey(pattern.Token_e, hs.re); hs.status.Err != nil {
 			return nil
 		}
 	}
@@ -311,7 +318,7 @@ func (hs *HandshakeState) onReadTokenS(payload []byte) []byte {
 	}
 	hs.status.RemoteStatic = hs.rs
 	if hs.cfg.Observer != nil {
-		if hs.status.Err = hs.cfg.Observer.OnPeerPublicKey(Token_s, hs.rs); hs.status.Err != nil {
+		if hs.status.Err = hs.cfg.Observer.OnPeerPublicKey(pattern.Token_s, hs.rs); hs.status.Err != nil {
 			return nil
 		}
 	}
@@ -332,7 +339,7 @@ func (hs *HandshakeState) onTokenEE() {
 		return
 	}
 	hs.ss.MixKey(eeBytes)
-	explicitBzero(eeBytes)
+	internal.ExplicitBzero(eeBytes)
 }
 
 func (hs *HandshakeState) onTokenES() {
@@ -362,7 +369,7 @@ func (hs *HandshakeState) onTokenES() {
 		return
 	}
 	hs.ss.MixKey(esBytes)
-	explicitBzero(esBytes)
+	internal.ExplicitBzero(esBytes)
 }
 
 func (hs *HandshakeState) onTokenSE() {
@@ -392,7 +399,7 @@ func (hs *HandshakeState) onTokenSE() {
 		return
 	}
 	hs.ss.MixKey(seBytes)
-	explicitBzero(seBytes)
+	internal.ExplicitBzero(seBytes)
 }
 
 func (hs *HandshakeState) onTokenSS() {
@@ -409,7 +416,7 @@ func (hs *HandshakeState) onTokenSS() {
 		return
 	}
 	hs.ss.MixKey(ssBytes)
-	explicitBzero(ssBytes)
+	internal.ExplicitBzero(ssBytes)
 }
 
 func (hs *HandshakeState) onTokenPsk() {
@@ -456,19 +463,19 @@ func (hs *HandshakeState) WriteMessage(dst, payload []byte) ([]byte, error) {
 	baseLen := len(dst)
 	for _, v := range hs.patterns[hs.patternIndex] {
 		switch v {
-		case Token_e:
+		case pattern.Token_e:
 			dst = hs.onWriteTokenE(dst)
-		case Token_s:
+		case pattern.Token_s:
 			dst = hs.onWriteTokenS(dst)
-		case Token_ee:
+		case pattern.Token_ee:
 			hs.onTokenEE()
-		case Token_es:
+		case pattern.Token_es:
 			hs.onTokenES()
-		case Token_se:
+		case pattern.Token_se:
 			hs.onTokenSE()
-		case Token_ss:
+		case pattern.Token_ss:
 			hs.onTokenSS()
-		case Token_psk:
+		case pattern.Token_psk:
 			hs.onTokenPsk()
 		default:
 			hs.status.Err = errors.New("nyquist/HandshakeState/WriteMessage: invalid token: " + v.String())
@@ -510,19 +517,19 @@ func (hs *HandshakeState) ReadMessage(dst, payload []byte) ([]byte, error) {
 
 	for _, v := range hs.patterns[hs.patternIndex] {
 		switch v {
-		case Token_e:
+		case pattern.Token_e:
 			payload = hs.onReadTokenE(payload)
-		case Token_s:
+		case pattern.Token_s:
 			payload = hs.onReadTokenS(payload)
-		case Token_ee:
+		case pattern.Token_ee:
 			hs.onTokenEE()
-		case Token_es:
+		case pattern.Token_es:
 			hs.onTokenES()
-		case Token_se:
+		case pattern.Token_se:
 			hs.onTokenSE()
-		case Token_ss:
+		case pattern.Token_ss:
 			hs.onTokenSS()
-		case Token_psk:
+		case pattern.Token_psk:
 			hs.onTokenPsk()
 		default:
 			hs.status.Err = errors.New("nyquist/HandshakeState/ReadMessage: invalid token: " + v.String())
@@ -549,7 +556,7 @@ func (hs *HandshakeState) handlePreMessages() error {
 
 	// Do everything from the point of view of the initiator to simplify
 	// processing.
-	var s, e, rs, re PublicKey
+	var s, e, rs, re dh.PublicKey
 	rs, re = hs.rs, hs.re
 	if hs.s != nil {
 		s = hs.s.Public()
@@ -576,10 +583,10 @@ func (hs *HandshakeState) handlePreMessages() error {
 	return nil
 }
 
-func (hs *HandshakeState) handlePreMessage(preMessage MessagePattern, s, e PublicKey, side string) error {
+func (hs *HandshakeState) handlePreMessage(preMessage pattern.Message, s, e dh.PublicKey, side string) error {
 	for _, v := range preMessage {
 		switch v {
-		case Token_e:
+		case pattern.Token_e:
 			if e == nil {
 				return fmt.Errorf("nyquist/New: %s e not set", side)
 			}
@@ -588,7 +595,7 @@ func (hs *HandshakeState) handlePreMessage(preMessage MessagePattern, s, e Publi
 			if hs.cfg.Protocol.Pattern.IsPSK() {
 				hs.ss.MixKey(pkBytes)
 			}
-		case Token_s:
+		case pattern.Token_s:
 			if s == nil {
 				return fmt.Errorf("nyquist/New: %s s not set", side)
 			}

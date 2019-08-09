@@ -1,4 +1,6 @@
-package nyquist
+// Package cipher implments the Noise Protocol Framework cipher function
+// abstract interface and standard cipher functions.
+package cipher
 
 import (
 	"crypto/cipher"
@@ -32,6 +34,18 @@ type Cipher interface {
 type Rekeyable interface {
 	// Rekey returns a new 32-byte cipher key as a pseudorandom function of `k`.
 	Rekey(k []byte) []byte
+}
+
+// Resetable is the interface implemented by `crypto/cipher.AEAD` instances
+// that are capable of sanitizing themselves.
+type Resetable interface {
+	// Reset clears the object of sensitive data.
+	Reset()
+}
+
+// FromString returns a Cipher by algorithm name, or nil.
+func FromString(s string) Cipher {
+	return supportedCiphers[s]
 }
 
 // ChaChaPoly is the ChaChaPoly cipher functions.

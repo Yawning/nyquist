@@ -1,9 +1,12 @@
 package nyquist
 
 import (
-	"crypto/cipher"
+	goCipher "crypto/cipher"
 	"errors"
 	"math"
+
+	"gitlab.com/yawning/nyquist.git/cipher"
+	"gitlab.com/yawning/nyquist.git/internal"
 )
 
 const (
@@ -17,9 +20,9 @@ var zeroes [32]byte
 
 // CipherState is a keyed AEAD algorithm instance.
 type CipherState struct {
-	cipher Cipher
+	cipher cipher.Cipher
 
-	aead cipher.AEAD
+	aead goCipher.AEAD
 	k    []byte
 	n    uint64
 
@@ -130,7 +133,7 @@ func (cs *CipherState) Rekey() error {
 	}
 
 	var newKey []byte
-	if rekeyer, ok := (cs.cipher).(Rekeyable); ok {
+	if rekeyer, ok := (cs.cipher).(cipher.Rekeyable); ok {
 		// The cipher function set has a specific `REKEY` function defined.
 		newKey = rekeyer.Rekey(cs.k)
 	} else {
@@ -144,7 +147,7 @@ func (cs *CipherState) Rekey() error {
 	}
 
 	err := cs.setKey(newKey)
-	explicitBzero(newKey)
+	internal.ExplicitBzero(newKey)
 
 	return err
 }
@@ -152,11 +155,11 @@ func (cs *CipherState) Rekey() error {
 // Reset clears the CipherState of sensitive data.
 func (cs *CipherState) Reset() {
 	if cs.k != nil {
-		explicitBzero(cs.k)
+		internal.ExplicitBzero(cs.k)
 		cs.k = nil
 	}
 	if cs.aead != nil {
-		if reseter, ok := (cs.aead).(Resetable); ok {
+		if reseter, ok := (cs.aead).(cipher.Resetable); ok {
 			reseter.Reset()
 		}
 		cs.aead = nil
@@ -164,7 +167,7 @@ func (cs *CipherState) Reset() {
 	}
 }
 
-func newCipherState(cipher Cipher, maxMessageSize int) *CipherState {
+func newCipherState(cipher cipher.Cipher, maxMessageSize int) *CipherState {
 	return &CipherState{
 		cipher:         cipher,
 		maxMessageSize: maxMessageSize,
