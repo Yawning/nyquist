@@ -35,6 +35,10 @@ type Protocol struct {
 
 // String returns the string representation of the protocol name.
 func (pr *Protocol) String() string {
+	if pr.Pattern == nil || pr.DH == nil || pr.Cipher == nil || pr.Hash == nil {
+		return "[invalid protocol]"
+	}
+
 	parts := []string{
 		protocolPrefix,
 		pr.Pattern.String(),
@@ -58,17 +62,17 @@ func NewProtocol(s string) (*Protocol, error) {
 		return nil, errors.New("nyquist: malformed protocol name")
 	}
 
-	var protocol Protocol
-	protocol.Pattern = pattern.FromString(parts[1])
-	protocol.DH = dh.FromString(parts[2])
-	protocol.Cipher = cipher.FromString(parts[3])
-	protocol.Hash = hash.FromString(parts[4])
+	var pr Protocol
+	pr.Pattern = pattern.FromString(parts[1])
+	pr.DH = dh.FromString(parts[2])
+	pr.Cipher = cipher.FromString(parts[3])
+	pr.Hash = hash.FromString(parts[4])
 
-	if protocol.Pattern == nil || protocol.DH == nil || protocol.Cipher == nil || protocol.Hash == nil {
+	if pr.Pattern == nil || pr.DH == nil || pr.Cipher == nil || pr.Hash == nil {
 		return nil, ErrProtocolNotSupported
 	}
 
-	return &protocol, nil
+	return &pr, nil
 }
 
 // HandshakeConfig is a handshake configuration.
