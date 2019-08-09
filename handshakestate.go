@@ -18,8 +18,8 @@ const (
 	// DefaultMaxMessageSize is the default maximum message size.
 	DefaultMaxMessageSize = 65535
 
-	// PSKSize is the size of the pre-shared symmetric key.
-	PSKSize = 32
+	// PreSharedKeySize is the size of the pre-shared symmetric key.
+	PreSharedKeySize = 32
 
 	protocolPrefix = "Noise"
 )
@@ -613,7 +613,7 @@ func NewHandshake(cfg *HandshakeConfig) (*HandshakeState, error) {
 	// TODO: Validate the config further?
 
 	if cfg.Protocol.Pattern.IsPSK() {
-		if len(cfg.PreSharedKey) != PSKSize {
+		if len(cfg.PreSharedKey) != PreSharedKeySize {
 			return nil, errors.New("nyquist/New: invalid or missing PreSharedKey")
 		}
 	}
