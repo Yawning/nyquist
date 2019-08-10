@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"gitlab.com/yawning/nyquist.git/dh"
+	"gitlab.com/yawning/nyquist.git/pattern"
 	"gitlab.com/yawning/nyquist.git/vectors"
 )
 
@@ -164,12 +165,15 @@ func doTestVectorMessages(t *testing.T, hs *HandshakeState, v *vectors.Vector) {
 func configsFromVector(t *testing.T, v *vectors.Vector) (*HandshakeConfig, *HandshakeConfig) {
 	require := require.New(t)
 
-	protocol, err := NewProtocol(v.ProtocolName)
+	protoName := v.ProtocolName
+	protocol, err := NewProtocol(protoName)
 	if err == ErrProtocolNotSupported {
 		t.Skipf("protocol not supported")
 	}
-	require.NoError(err, "NewProtocol(%v)", v.ProtocolName)
-	require.Equal(v.ProtocolName, protocol.String(), "derived protocol name matches test case")
+	require.NoError(err, "NewProtocol(%v)", protoName)
+	require.Equal(protoName, protocol.String(), "derived protocol name matches test case")
+	err = pattern.IsValid(protocol.Pattern)
+	require.NoError(err, "IsValid(protocol.Pattern)")
 
 	// Initiator side.
 	var initStatic dh.Keypair

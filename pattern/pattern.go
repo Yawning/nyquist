@@ -75,7 +75,8 @@ var supportedPatterns = map[string]Pattern{
 type Token uint8
 
 const (
-	Token_e Token = iota
+	Token_invalid Token = iota
+	Token_e
 	Token_s
 	Token_ee
 	Token_es

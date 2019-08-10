@@ -65,11 +65,11 @@ Several non-standard protocol extensions are supported by this implementation:
       a key that is 256 bits (32 bytes) in size.
 
  * Non-standard (or unimplemented) patterns are trivial to support by
-   implementing the appropriate interface.
+   implementing the appropriate interface.  The `pattern` sub-package
+   includes a pattern validator that can verify a pattern against the
+   specification's pattern validity rules.
 
 #### TODO
-
- * Add a pattern validity checker.
 
  * Improve tests.
 
