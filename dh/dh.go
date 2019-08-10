@@ -9,6 +9,7 @@ import (
 	"io"
 
 	"github.com/oasislabs/ed25519/extra/x25519"
+	"gitlab.com/yawning/x448.git"
 
 	"gitlab.com/yawning/nyquist.git/internal"
 )
@@ -28,6 +29,7 @@ var (
 
 	supportedDHs = map[string]DH{
 		"25519": X25519,
+		"448":   X448,
 	}
 )
 
@@ -188,5 +190,117 @@ func (pk *PublicKey25519) UnmarshalBinary(data []byte) error {
 // Warning: Altering the returned slice is unsupported and will lead to
 // unexpected behavior.
 func (pk *PublicKey25519) Bytes() []byte {
+	return pk.rawPublicKey[:]
+}
+
+// X448 is the X448 DH function.
+var X448 DH = &dh448{}
+
+type dh448 struct{}
+
+func (dh *dh448) String() string {
+	return "448"
+}
+
+func (dh *dh448) GenerateKeypair(rng io.Reader) (Keypair, error) {
+	var kp Keypair448
+	if _, err := io.ReadFull(rng, kp.rawPrivateKey[:]); err != nil {
+		return nil, err
+	}
+
+	x448.ScalarBaseMult(&kp.publicKey.rawPublicKey, &kp.rawPrivateKey)
+
+	return &kp, nil
+}
+
+func (dh *dh448) ParsePublicKey(data []byte) (PublicKey, error) {
+	var pk PublicKey448
+	if err := pk.UnmarshalBinary(data); err != nil {
+		return nil, err
+	}
+
+	return &pk, nil
+}
+
+func (dh *dh448) Size() int {
+	return 56
+}
+
+// Keypair448 is a X448 keypair.
+type Keypair448 struct {
+	rawPrivateKey [56]byte
+	publicKey     PublicKey448
+}
+
+// MarshalBinary marshals the keypair's private key to binary form.
+func (kp *Keypair448) MarshalBinary() ([]byte, error) {
+	out := make([]byte, 0, len(kp.rawPrivateKey))
+	return append(out, kp.rawPrivateKey[:]...), nil
+}
+
+// UnmarshalBinary unmarshals the keypair's private key from binary form,
+// and re-derives the corresponding public key.
+func (kp *Keypair448) UnmarshalBinary(data []byte) error {
+	if len(data) != 56 {
+		return ErrMalformedPrivateKey
+	}
+
+	copy(kp.rawPrivateKey[:], data)
+	x448.ScalarBaseMult(&kp.publicKey.rawPublicKey, &kp.rawPrivateKey)
+
+	return nil
+}
+
+// Public returns the public key of the keypair.
+func (kp *Keypair448) Public() PublicKey {
+	return &kp.publicKey
+}
+
+// DH performs a Diffie-Hellman calculation between the private key in the
+// keypair and the provided public key.
+func (kp *Keypair448) DH(publicKey PublicKey) ([]byte, error) {
+	pubKey, ok := publicKey.(*PublicKey448)
+	if !ok {
+		return nil, ErrMismatchedPublicKey
+	}
+
+	var sharedSecret [56]byte
+	x448.ScalarMult(&sharedSecret, &kp.rawPrivateKey, &pubKey.rawPublicKey)
+
+	return sharedSecret[:], nil
+}
+
+// Reset clears the keypair of sensitive data.
+func (kp *Keypair448) Reset() {
+	internal.ExplicitBzero(kp.rawPrivateKey[:])
+}
+
+// PublicKey448 is a X448 public key.
+type PublicKey448 struct {
+	rawPublicKey [56]byte
+}
+
+// MarshalBinary marshals the public key to binary form.
+func (pk *PublicKey448) MarshalBinary() ([]byte, error) {
+	out := make([]byte, 0, len(pk.rawPublicKey))
+	return append(out, pk.rawPublicKey[:]...), nil
+}
+
+// UnmarshalBinary unmarshals the public key from binary form.
+func (pk *PublicKey448) UnmarshalBinary(data []byte) error {
+	if len(data) != 56 {
+		return ErrMalformedPublicKey
+	}
+
+	copy(pk.rawPublicKey[:], data)
+
+	return nil
+}
+
+// Bytes returns the binary serialized public key.
+//
+// Warning: Altering the returned slice is unsupported and will lead to
+// unexpected behavior.
+func (pk *PublicKey448) Bytes() []byte {
 	return pk.rawPublicKey[:]
 }

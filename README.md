@@ -21,8 +21,6 @@ APIs.
 
  * 10.2. The `fallback` modifier
 
- * 12.2. The `448` DH functions
-
 Care is taken to attempt to sanitize private key material from memory where
 possible, however due to limitations in `crypto/cipher.AEAD`, `crypto/hkdf`,
 `crypto/hmac`, and all of the hash functions, this is not particularly
@@ -71,8 +69,6 @@ Several non-standard protocol extensions are supported by this implementation:
 #### TODO
 
  * Add a pattern validity checker.
-
- * Support X448.
 
  * Improve tests.
 

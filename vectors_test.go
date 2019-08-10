@@ -241,13 +241,22 @@ func configsFromVector(t *testing.T, v *vectors.Vector) (*HandshakeConfig, *Hand
 func mustParsePrivateKey(t *testing.T, dhImpl dh.DH, raw []byte) dh.Keypair {
 	require := require.New(t)
 
-	require.Equal(dhImpl.String(), "25519", "dh is X25519")
+	switch dhImpl.String() {
+	case "25519":
+		var kp dh.Keypair25519
+		err := kp.UnmarshalBinary(raw)
+		require.NoError(err, "parse X25519 private key")
+		return &kp
+	case "448":
+		var kp dh.Keypair448
+		err := kp.UnmarshalBinary(raw)
+		require.NoError(err, "parse X448 private key")
+		return &kp
+	default:
+		require.Fail("failed to parse private key, unknown type")
+	}
 
-	var kp dh.Keypair25519
-	err := kp.UnmarshalBinary(raw)
-	require.NoError(err, "parse X25519 private key")
-
-	return &kp
+	panic("NOT REACHED")
 }
 
 type failReader struct{}
