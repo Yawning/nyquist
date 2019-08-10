@@ -47,7 +47,8 @@ Several non-standard protocol extensions are supported by this implementation:
    the value in the specification.
 
  * AEAD algorithms with authentication tags that are not 128 bits (16 bytes)
-   in size should be supported.
+   in size should be supported.  While the package will not reject algorithms
+   with tags sizes that are less than 128 bits, this is NOT RECOMMENED.
 
  * Non-standard DH, Cipher and Hash functions are trivial to support by
    implementing the appropriate interface, as long as the following
@@ -56,7 +57,9 @@ Several non-standard protocol extensions are supported by this implementation:
     * For any given DH scheme, all public keys must be `DHLEN` bytes in size.
 
     * For any given Hash function, `HASHLEN` must be at least 256 bits
-      (32 bytes) in size.
+      (32 bytes) in size.  The specification requires exactly 256 or 512
+      bits, however this package will tollerate any length, greater than
+      or equal to 256 bits.
 
     * AEAD implementations must be able to tollerate always being passed
       a key that is 256 bits (32 bytes) in size.
