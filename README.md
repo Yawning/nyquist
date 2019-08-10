@@ -13,13 +13,8 @@ This package implements the [Noise Protocol Framework][1].
 It is assumed that developers using this package are familiar with the Noise
 Protocol Framework specification.
 
-While this package attempts to be as complete of an implementation of the
-specification as possible, certain features are currently unimplemented,
-primarily due to lack of time on the part of the author.  It is belived
-that it is possible to implement the missing functionality via the public
-APIs.
-
- * 10.2. The `fallback` modifier
+As of revision 34 of the specification, the only standard functionality
+that is NOT implemented is "10.2. The `fallback` modifier".
 
 Care is taken to attempt to sanitize private key material from memory where
 possible, however due to limitations in `crypto/cipher.AEAD`, `crypto/hkdf`,
@@ -27,14 +22,14 @@ possible, however due to limitations in `crypto/cipher.AEAD`, `crypto/hkdf`,
 comprehensive.
 
 This package will `panic` only if invariants are violated.  Under normal
-and correct use this situation should not occur ("correct" being defined as,
-"Yes, it will panic if an invalid configuration is provided when initializing
-a handshake").
+use this situation should not occur ("normal" being defined as, "Yes, it
+will panic if an invalid configuration is provided when initializing a
+handshake").
 
-Several "non-standard" cryptography libraries are used in lieu of runtime and
-`x/crypto` equivalents.  If more "standard" implementations are desired it is
-possible to implement the relevant cryptography functions using the external
-interface.  The libraries and rationale are as follows:
+Several uncommon cryptography libraries are used by this implementation,
+some replacing functionality provided by the runtime.  It is possible to
+use the runtime equivalents if desired, by implementing the appropriate
+interfaces.
 
  * [bsaes][2] Provides a constant time AES256-GCM.  The runtime library's
    implementation of both AES and GHASH is insecure on systems without
@@ -42,6 +37,8 @@ interface.  The libraries and rationale are as follows:
 
  * [ed25519][3] Provides a significantly faster X25519 scalar basepoint
    multiply on supported platforms.
+
+ * [x448][4] Provides a (slow) X448 implementation.
 
 Several non-standard protocol extensions are supported by this implementation:
 
@@ -56,9 +53,10 @@ Several non-standard protocol extensions are supported by this implementation:
    implementing the appropriate interface, as long as the following
    constraints are met:
 
-    * For any given DH scheme, all public keys must be DHLEN bytes in size.
+    * For any given DH scheme, all public keys must be `DHLEN` bytes in size.
 
-    * HASHLEN must be at least 256 bits (32 bytes) in size.
+    * For any given Hash function, `HASHLEN` must be at least 256 bits
+      (32 bytes) in size.
 
     * AEAD implementations must be able to tollerate always being passed
       a key that is 256 bits (32 bytes) in size.
@@ -75,3 +73,4 @@ Several non-standard protocol extensions are supported by this implementation:
 [1]: https://noiseprotocol.org/
 [2]: https://gitlab.com/yawning/bsaes
 [3]: https://github.com/oasislabs/ed25519
+[4]: https://gitlab.com/yawning/x448
