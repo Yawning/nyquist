@@ -140,7 +140,7 @@ func (cs *CipherState) Rekey() error {
 		// The cipher function set has no `REKEY` function defined, use the
 		// default generic implementation.
 		nonce := cs.cipher.EncodeNonce(maxnonce)
-		newKey = cs.aead.Seal(nil, nonce, nil, zeroes[:])
+		newKey = cs.aead.Seal(nil, nonce, zeroes[:], nil)
 
 		// "defaults to returning the first 32 bytes"
 		newKey = truncateTo32Bytes(newKey)
@@ -159,8 +159,8 @@ func (cs *CipherState) Reset() {
 		cs.k = nil
 	}
 	if cs.aead != nil {
-		if reseter, ok := (cs.aead).(cipher.Resetable); ok {
-			reseter.Reset()
+		if resetter, ok := (cs.aead).(cipher.Resetable); ok {
+			resetter.Reset()
 		}
 		cs.aead = nil
 		cs.aeadOverhead = 0
