@@ -60,6 +60,7 @@ func IsValid(pa Pattern) error {
 	if pa.IsOneWay() && len(messages) != 1 {
 		return errors.New("nyquist/pattern: excessive messages for one-way pattern")
 	}
+	var numDHs int
 	for i, msg := range messages {
 		m, isInitiator, side := getSide(i)
 		for _, v := range msg {
@@ -76,6 +77,7 @@ func IsValid(pa Pattern) error {
 				if inEither(v) {
 					return fmt.Errorf("nyquist/pattern: redundant DH calcuation: %s", v)
 				}
+				numDHs++
 			case Token_psk:
 				// Technically the spec supports multiple PSKs, though no
 				// standard patterns are defined at this time.  Some
@@ -148,6 +150,12 @@ func IsValid(pa Pattern) error {
 				return fmt.Errorf("nyquist/pattern: payload after pre-shared key without ephemeral (%s)", side)
 			}
 		}
+	}
+
+	// Patterns without any DH calculations may be "valid", but are
+	// nonsensical.
+	if numDHs == 0 {
+		return errors.New("nyquist/pattern: no DH calculations at all")
 	}
 
 	// Make sure the PSK hint interface function is implemented correctly.
