@@ -204,7 +204,6 @@ type HandshakeState struct {
 	maxMessageSize int
 	dhLen          int
 	isInitiator    bool
-	processedE     bool
 }
 
 // SymmetricState returns the HandshakeState's encapsulated SymmetricState.
@@ -238,12 +237,6 @@ func (hs *HandshakeState) Reset() {
 }
 
 func (hs *HandshakeState) onWriteTokenE(dst []byte) []byte {
-	if hs.processedE {
-		hs.status.Err = errors.New("nyquist/HandshakeState/WriteMessage/e: e already set")
-		return nil
-	}
-	hs.processedE = true
-
 	// hs.cfg.LocalEphemeral can be used to pre-generate the ephemeral key,
 	// so only generate when required.
 	if hs.e == nil {
@@ -261,10 +254,6 @@ func (hs *HandshakeState) onWriteTokenE(dst []byte) []byte {
 }
 
 func (hs *HandshakeState) onReadTokenE(payload []byte) []byte {
-	if hs.re != nil {
-		hs.status.Err = errors.New("nyquist/HandshakeState/ReadMessage/e: re already set")
-		return nil
-	}
 	if len(payload) < hs.dhLen {
 		hs.status.Err = errors.New("nyquist/HandshakeState/ReadMessage/e: truncated message")
 		return nil
@@ -296,10 +285,6 @@ func (hs *HandshakeState) onWriteTokenS(dst []byte) []byte {
 }
 
 func (hs *HandshakeState) onReadTokenS(payload []byte) []byte {
-	if hs.rs != nil {
-		hs.status.Err = errors.New("nyquist/HandshakeState/ReadMessage/s: rs already set")
-		return nil
-	}
 	tempLen := hs.dhLen
 	if hs.ss.cs.HasKey() {
 		// The spec says `DHLEN + 16`, but doing it this way allows this
@@ -330,14 +315,6 @@ func (hs *HandshakeState) onReadTokenS(payload []byte) []byte {
 }
 
 func (hs *HandshakeState) onTokenEE() {
-	if hs.e == nil {
-		hs.status.Err = errors.New("nyquist/HandshakeState/Message/ee: e not set")
-		return
-	}
-	if hs.re == nil {
-		hs.status.Err = errors.New("nyquist/HandshakeState/Message/ee: re not set")
-		return
-	}
 	var eeBytes []byte
 	if eeBytes, hs.status.Err = hs.e.DH(hs.re); hs.status.Err != nil {
 		return
@@ -349,24 +326,8 @@ func (hs *HandshakeState) onTokenEE() {
 func (hs *HandshakeState) onTokenES() {
 	var esBytes []byte
 	if hs.isInitiator {
-		if hs.e == nil {
-			hs.status.Err = errors.New("nyquist/HandshakeState/Message/es: e not set")
-			return
-		}
-		if hs.rs == nil {
-			hs.status.Err = errors.New("nyquist/HandshakeState/Message/es: rs not set")
-			return
-		}
 		esBytes, hs.status.Err = hs.e.DH(hs.rs)
 	} else {
-		if hs.s == nil {
-			hs.status.Err = errors.New("nyquist/HandshakeState/Message/es: s not set")
-			return
-		}
-		if hs.re == nil {
-			hs.status.Err = errors.New("nyquist/HandshakeState/Message/es: re not set")
-			return
-		}
 		esBytes, hs.status.Err = hs.s.DH(hs.re)
 	}
 	if hs.status.Err != nil {
@@ -379,24 +340,8 @@ func (hs *HandshakeState) onTokenES() {
 func (hs *HandshakeState) onTokenSE() {
 	var seBytes []byte
 	if hs.isInitiator {
-		if hs.s == nil {
-			hs.status.Err = errors.New("nyquist/HandshakeState/Message/se: s not set")
-			return
-		}
-		if hs.re == nil {
-			hs.status.Err = errors.New("nyquist/HandshakeState/Message/se: re not set")
-			return
-		}
 		seBytes, hs.status.Err = hs.s.DH(hs.re)
 	} else {
-		if hs.e == nil {
-			hs.status.Err = errors.New("nyquist/HandshakeState/Message/se: e not set")
-			return
-		}
-		if hs.rs == nil {
-			hs.status.Err = errors.New("nyquist/HandshakeState/Message/se: rs not set")
-			return
-		}
 		seBytes, hs.status.Err = hs.e.DH(hs.rs)
 	}
 	if hs.status.Err != nil {
@@ -407,14 +352,6 @@ func (hs *HandshakeState) onTokenSE() {
 }
 
 func (hs *HandshakeState) onTokenSS() {
-	if hs.s == nil {
-		hs.status.Err = errors.New("nyquist/HandshakeState/Message/ss: s not set")
-		return
-	}
-	if hs.rs == nil {
-		hs.status.Err = errors.New("nyquist/HandshakeState/Message/ss: rs not set")
-		return
-	}
 	var ssBytes []byte
 	if ssBytes, hs.status.Err = hs.s.DH(hs.rs); hs.status.Err != nil {
 		return
@@ -558,8 +495,8 @@ func (hs *HandshakeState) handlePreMessages() error {
 		return nil
 	}
 
-	// Do everything from the point of view of the initiator to simplify
-	// processing.
+	// Gather all the public keys from the config, from the initiator's
+	// point of view.
 	var s, e, rs, re dh.PublicKey
 	rs, re = hs.rs, hs.re
 	if hs.s != nil {
@@ -572,41 +509,50 @@ func (hs *HandshakeState) handlePreMessages() error {
 		s, e, rs, re = rs, re, s, e
 	}
 
-	if err := hs.handlePreMessage(preMessages[0], s, e, "initiator"); err != nil {
-		return err
-	}
+	for i, keys := range []struct {
+		s, e         dh.PublicKey
+		side         string
+		mayGenerateE bool
+	}{
+		{s, e, "initiator", hs.isInitiator},
+		{rs, re, "responder", !hs.isInitiator},
+	} {
+		if i+1 > len(preMessages) {
+			break
+		}
 
-	if len(preMessages) == 1 {
-		return nil
-	}
+		for _, v := range preMessages[i] {
+			switch v {
+			case pattern.Token_e:
+				var pkBytes []byte
+				if keys.e == nil {
+					if !keys.mayGenerateE {
+						return fmt.Errorf("nyquist/New: %s e not set", keys.side)
+					}
 
-	if err := hs.handlePreMessage(preMessages[1], rs, re, "responder"); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (hs *HandshakeState) handlePreMessage(preMessage pattern.Message, s, e dh.PublicKey, side string) error {
-	for _, v := range preMessage {
-		switch v {
-		case pattern.Token_e:
-			if e == nil {
-				return fmt.Errorf("nyquist/New: %s e not set", side)
+					// If the missing `e` is local, then just generate it.
+					if hs.e, hs.status.Err = hs.dh.GenerateKeypair(hs.cfg.getRng()); hs.status.Err != nil {
+						return hs.status.Err
+					}
+					hs.status.LocalEphemeral = hs.e.Public()
+					pkBytes = hs.status.LocalEphemeral.Bytes()
+				} else {
+					pkBytes = keys.e.Bytes()
+				}
+				hs.ss.MixHash(pkBytes)
+				if hs.cfg.Protocol.Pattern.IsPSK() {
+					hs.ss.MixKey(pkBytes)
+				}
+			case pattern.Token_s:
+				if keys.s == nil {
+					return fmt.Errorf("nyquist/New: %s s not set", keys.side)
+				}
+				hs.ss.MixHash(keys.s.Bytes())
+			default:
 			}
-			pkBytes := e.Bytes()
-			hs.ss.MixHash(pkBytes)
-			if hs.cfg.Protocol.Pattern.IsPSK() {
-				hs.ss.MixKey(pkBytes)
-			}
-		case pattern.Token_s:
-			if s == nil {
-				return fmt.Errorf("nyquist/New: %s s not set", side)
-			}
-			hs.ss.MixHash(s.Bytes())
-		default:
 		}
 	}
+
 	return nil
 }
 
