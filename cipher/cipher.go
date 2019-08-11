@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
+	"github.com/oasislabs/deoxysii"
 	"gitlab.com/yawning/bsaes.git"
 	"golang.org/x/crypto/chacha20poly1305"
 )
@@ -14,6 +15,7 @@ import (
 var supportedCiphers = map[string]Cipher{
 	"ChaChaPoly": ChaChaPoly,
 	"AESGCM":     AESGCM,
+	"DeoxysII":   DeoxysII,
 }
 
 // Cipher is an AEAD algorithm factory.
@@ -95,5 +97,28 @@ func (ci *cipherAesGcm) New(key []byte) (cipher.AEAD, error) {
 func (ci *cipherAesGcm) EncodeNonce(nonce uint64) []byte {
 	var encodedNonce [12]byte // 96 bits
 	binary.BigEndian.PutUint64(encodedNonce[4:], nonce)
+	return encodedNonce[:]
+}
+
+// DeoxysII is the non-standard DeoxysII cipher functions.
+//
+// Warning: This cipher is non-standard.
+var DeoxysII Cipher = &cipherDeoxysII{}
+
+type cipherDeoxysII struct{}
+
+func (ci *cipherDeoxysII) String() string {
+	return "DeoxysII"
+}
+
+func (ci *cipherDeoxysII) New(key []byte) (cipher.AEAD, error) {
+	return deoxysii.New(key)
+}
+
+func (ci *cipherDeoxysII) EncodeNonce(nonce uint64) []byte {
+	// Using the full nonce-space is fine, and big endian follows how
+	// Deoxys-II encodes things internally.
+	var encodedNonce [deoxysii.NonceSize]byte // 120 bits
+	binary.BigEndian.PutUint64(encodedNonce[7:], nonce)
 	return encodedNonce[:]
 }

@@ -40,6 +40,8 @@ interfaces.
 
  * [x448][4] Provides a (slow) X448 implementation.
 
+ * [deoxysii][5] Provides a Deoxys-II-256-128 implementation.
+
 Several non-standard protocol extensions are supported by this implementation:
 
  * The maximum message size can be set to an arbitrary value or entirely
@@ -69,6 +71,9 @@ Several non-standard protocol extensions are supported by this implementation:
    includes a pattern validator that can verify a pattern against the
    specification's pattern validity rules.
 
+ * A Cipher implementation backed by the Deoxys-II-256-128 MRAE primitive
+   is provided.
+
 #### TODO
 
  * Improve tests.
@@ -77,3 +82,4 @@ Several non-standard protocol extensions are supported by this implementation:
 [2]: https://gitlab.com/yawning/bsaes
 [3]: https://github.com/oasislabs/ed25519
 [4]: https://gitlab.com/yawning/x448
+[5]: https://github.com/oasislabs/deoxysii

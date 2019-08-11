@@ -1,5 +1,7 @@
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/oasislabs/deoxysii v0.0.0-20190807103041-6159f99c2236 h1:eTbRemVO4uAXU5RlqqQ/OiPtBcB3tBez28rV0JusKss=
+github.com/oasislabs/deoxysii v0.0.0-20190807103041-6159f99c2236/go.mod h1:gFIu170Sklo1wPRTYMTDxA664TYdgrl9NENFXfC+u3g=
 github.com/oasislabs/ed25519 v0.0.0-20190803172433-faa06c2774f6 h1:gM0TrI4bhzoV9DOARwg812vHqSaAzCqMU7p8rFToiq0=
 github.com/oasislabs/ed25519 v0.0.0-20190803172433-faa06c2774f6/go.mod h1:BB2J82Ap0q/mSJZ0ALKKeQ5PTsiEoF/OSNGmwvrHrOI=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
@@ -9,6 +11,8 @@ github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 gitlab.com/yawning/bsaes.git v0.0.0-20190805113838-0a714cd429ec h1:FpfFs4EhNehiVfzQttTuxanPIT43FtkkCFypIod8LHo=
 gitlab.com/yawning/bsaes.git v0.0.0-20190805113838-0a714cd429ec/go.mod h1:BZ1RAoRPbCxum9Grlv5aeksu2H8BiKehBYooU2LFiOQ=
+gitlab.com/yawning/slice.git v0.0.0-20190714152416-bc4ae2510529 h1:GeSIG/kLmenUveo0XvlLXXtcKDeeItKA8iFnf0osNfg=
+gitlab.com/yawning/slice.git v0.0.0-20190714152416-bc4ae2510529/go.mod h1:sgaKGjNNjAAVrZvQQhE3oYIbnFZVaCBE2T7PmbpKJ4U=
 gitlab.com/yawning/x448.git v0.0.0-20190810030840-dcc677c7bddf h1:K/rnJnkqE5LrwaXEzEhDqKZcs4bmQVOFTbPDNIn9Qpc=
 gitlab.com/yawning/x448.git v0.0.0-20190810030840-dcc677c7bddf/go.mod h1:h91j3yLdf1F2/yqd9TRRiJcDaO149w0AzBpYLQE3yQI=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
