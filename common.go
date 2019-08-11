@@ -29,9 +29,8 @@ var (
 	// are called out of order, given the handshake's initiator status.
 	ErrOutOfOrder = errors.New("nyquist: out of order handshake operation")
 
-	// ErrDone is the error returned when further WrtieMessage/ReadMessage
-	// calls are attempted on an already completed HandshakeState.
-	ErrDone = errors.New("nyquist: handshake already complete")
+	// ErrDone is the error returned when the handshake is complete.
+	ErrDone = errors.New("nyquist: handshake complete")
 
 	// ErrProtocolNotSupported is the error returned when a requested protocol
 	// is not supported.

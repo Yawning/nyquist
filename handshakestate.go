@@ -115,7 +115,8 @@ type HandshakeConfig struct {
 
 	// MaxMessageSize specifies the maximum Noise message size the handshake
 	// and session will process or generate.  If the value is `0`,
-	// `DefaultMaxMessageSize` will be used.
+	// `DefaultMaxMessageSize` will be used.  A negative value will disable
+	// the maximum message size enforcement entirely.
 	//
 	// Warning: Values other than the default is a non-standard extension
 	// to the protocol.
@@ -227,10 +228,10 @@ func (hs *HandshakeState) Reset() {
 		hs.ss.Reset()
 		hs.ss = nil
 	}
-	if hs.s != hs.cfg.LocalStatic {
+	if hs.s != nil && hs.s != hs.cfg.LocalStatic {
 		hs.s.Reset()
 	}
-	if hs.e != hs.cfg.LocalEphemeral {
+	if hs.e != nil && hs.e != hs.cfg.LocalEphemeral {
 		hs.e.Reset()
 	}
 	// TODO: Should this set hs.status.Err?
@@ -436,7 +437,7 @@ func (hs *HandshakeState) WriteMessage(dst, payload []byte) ([]byte, error) {
 	return hs.onDone(dst)
 }
 
-// ReadMessage processes a read step of the handshake protocol, appended the
+// ReadMessage processes a read step of the handshake protocol, appending the
 // authentiated/decrypted message payload to dst, and returning the potentially
 // new slice.
 //
