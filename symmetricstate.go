@@ -91,7 +91,7 @@ func (ss *SymmetricState) EncryptAndHash(dst, plaintext []byte) []byte {
 	var err error
 	ciphertextOff := len(dst)
 	if dst, err = ss.cs.EncryptWithAd(dst, ss.h, plaintext); err != nil {
-		panic("nyquist/symmetricstate: encryptAndHash() failed: " + err.Error())
+		panic("nyquist/SymmetricState: encryptAndHash() failed: " + err.Error())
 	}
 	ss.MixHash(dst[ciphertextOff:])
 	return dst
@@ -150,7 +150,7 @@ func (ss *SymmetricState) hkdfHash(inputKeyMaterial []byte, outputs ...[]byte) {
 	r := hkdf.New(ss.hash.New, inputKeyMaterial, ss.ck, nil)
 	for _, output := range outputs {
 		if len(output) != ss.hashLen {
-			panic("nyquist/symmetricstate: non-HASHLEN sized output to HKDF-HASH")
+			panic("nyquist/SymmetricState: non-HASHLEN sized output to HKDF-HASH")
 		}
 		_, _ = io.ReadFull(r, output)
 	}

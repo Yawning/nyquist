@@ -17,7 +17,7 @@ As of revision 34 of the specification, the only standard functionality
 that is NOT implemented is "10.2. The `fallback` modifier".
 
 Care is taken to attempt to sanitize private key material from memory where
-possible, however due to limitations in `crypto/cipher.AEAD`, `crypto/hkdf`,
+possible, however due to limitations in `crypto/cipher.AEAD`, `x/crypto/hkdf`,
 `crypto/hmac`, and all of the hash functions, this is not particularly
 comprehensive.
 
