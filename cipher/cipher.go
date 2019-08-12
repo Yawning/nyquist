@@ -100,7 +100,7 @@ func (ci *cipherAesGcm) EncodeNonce(nonce uint64) []byte {
 	return encodedNonce[:]
 }
 
-// DeoxysII is the non-standard DeoxysII cipher functions.
+// DeoxysII is the DeoxysII cipher functions.
 //
 // Warning: This cipher is non-standard.
 var DeoxysII Cipher = &cipherDeoxysII{}
