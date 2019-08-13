@@ -221,7 +221,7 @@ func (hs *HandshakeState) GetStatus() *HandshakeStatus {
 
 // Reset clears the HandshakeState of sensitive data.
 //
-// Warning: If either of the locak keypairs were provided by the
+// Warning: If either of the local keypairs were provided by the
 // HandshakeConfig, they will be left intact.
 func (hs *HandshakeState) Reset() {
 	if hs.ss != nil {
@@ -229,6 +229,8 @@ func (hs *HandshakeState) Reset() {
 		hs.ss = nil
 	}
 	if hs.s != nil && hs.s != hs.cfg.LocalStatic {
+		// Having a local static key, that isn't from the config currently can't
+		// happen, but having the sanitization is harmless.
 		hs.s.Reset()
 	}
 	if hs.e != nil && hs.e != hs.cfg.LocalEphemeral {
@@ -511,12 +513,11 @@ func (hs *HandshakeState) handlePreMessages() error {
 	}
 
 	for i, keys := range []struct {
-		s, e         dh.PublicKey
-		side         string
-		mayGenerateE bool
+		s, e dh.PublicKey
+		side string
 	}{
-		{s, e, "initiator", hs.isInitiator},
-		{rs, re, "responder", !hs.isInitiator},
+		{s, e, "initiator"},
+		{rs, re, "responder"},
 	} {
 		if i+1 > len(preMessages) {
 			break
@@ -525,21 +526,17 @@ func (hs *HandshakeState) handlePreMessages() error {
 		for _, v := range preMessages[i] {
 			switch v {
 			case pattern.Token_e:
-				var pkBytes []byte
+				// While the specification allows for `e` tokens in the
+				// pre-messages, there are currently no patterns that use
+				// such a construct.
+				//
+				// While it is possible to generate `e` if it is the local
+				// one that is missing, that would be stretching a use-case
+				// that is already somewhat nonsensical.
 				if keys.e == nil {
-					if !keys.mayGenerateE {
-						return fmt.Errorf("nyquist/New: %s e not set", keys.side)
-					}
-
-					// If the missing `e` is local, then just generate it.
-					if hs.e, hs.status.Err = hs.dh.GenerateKeypair(hs.cfg.getRng()); hs.status.Err != nil {
-						return hs.status.Err
-					}
-					hs.status.LocalEphemeral = hs.e.Public()
-					pkBytes = hs.status.LocalEphemeral.Bytes()
-				} else {
-					pkBytes = keys.e.Bytes()
+					return fmt.Errorf("nyquist/New: %s e not set", keys.side)
 				}
+				pkBytes := keys.e.Bytes()
 				hs.ss.MixHash(pkBytes)
 				if hs.cfg.Protocol.Pattern.IsPSK() {
 					hs.ss.MixKey(pkBytes)
@@ -550,6 +547,7 @@ func (hs *HandshakeState) handlePreMessages() error {
 				}
 				hs.ss.MixHash(keys.s.Bytes())
 			default:
+				return errors.New("nyquist/New: invalid pre-message token: " + v.String())
 			}
 		}
 	}
