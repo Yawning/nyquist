@@ -74,10 +74,6 @@ Several non-standard protocol extensions are supported by this implementation:
  * A Cipher implementation backed by the Deoxys-II-256-128 MRAE primitive
    is provided.
 
-#### TODO
-
- * Improve tests.
-
 [1]: https://noiseprotocol.org/
 [2]: https://gitlab.com/yawning/bsaes
 [3]: https://github.com/oasislabs/ed25519

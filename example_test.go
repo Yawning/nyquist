@@ -57,6 +57,14 @@ func TestExample(t *testing.T) {
 	defer aliceHs.Reset()
 	defer bobHs.Reset()
 
+	// The SymmetricState and CipherState objects embedded in the
+	// HandshakeState can be accessed while the handshake is in progress,
+	// though most users likely will not need to do this.
+	aliceSs := aliceHs.SymmetricState()
+	require.NotNil(aliceSs, "aliceHs.SymmetricState()")
+	aliceCs := aliceSs.CipherState()
+	require.NotNil(aliceCs, "aliceSS.CipherState()")
+
 	// Then, each side calls hs.ReadMessage/hs.WriteMessage as appropriate.
 	alicePlaintextE := []byte("alice e plaintext") // Handshake message payloads are optional.
 	aliceMsg1, err := aliceHs.WriteMessage(nil, alicePlaintextE)

@@ -8,7 +8,23 @@ import (
 	"gitlab.com/yawning/nyquist.git/cipher"
 )
 
-func TestCipherStateMalformedKey(t *testing.T) {
+func TestCipherState(t *testing.T) {
+	for _, v := range []struct {
+		n  string
+		fn func(*testing.T)
+	}{
+		{"MalformedKey", testCipherStateMalformedKey},
+		{"ExhaustedNonce", testCipherStateExhaustedNonce},
+		{"MaxMessageSize", testCipherStateMaxMessageSize},
+		{"Rekey", testCipherStateRekey},
+		{"Reset", testCipherStateReset},
+		{"Auth", testCipherStateAuth},
+	} {
+		t.Run(v.n, v.fn)
+	}
+}
+
+func testCipherStateMalformedKey(t *testing.T) {
 	require := require.New(t)
 	cs := newCipherState(cipher.ChaChaPoly, DefaultMaxMessageSize)
 
@@ -27,7 +43,7 @@ func TestCipherStateMalformedKey(t *testing.T) {
 	}, "cs.InitializeKey(undersized)")
 }
 
-func TestCipherStateExhaustedNonce(t *testing.T) {
+func testCipherStateExhaustedNonce(t *testing.T) {
 	require := require.New(t)
 	cs := newCipherState(cipher.ChaChaPoly, DefaultMaxMessageSize)
 
@@ -44,7 +60,7 @@ func TestCipherStateExhaustedNonce(t *testing.T) {
 	require.Nil(plaintext, "cs.DecryptWithAd() - exhausted nonce")
 }
 
-func TestCipherStateMaxMessageSize(t *testing.T) {
+func testCipherStateMaxMessageSize(t *testing.T) {
 	require := require.New(t)
 	cs := newCipherState(cipher.DeoxysII, DefaultMaxMessageSize)
 
@@ -71,7 +87,7 @@ func TestCipherStateMaxMessageSize(t *testing.T) {
 	require.Equal(maxPlaintext, plaintext, "cs.DecryptWithAd(maxMessageSize)")
 }
 
-func TestCipherStateRekey(t *testing.T) {
+func testCipherStateRekey(t *testing.T) {
 	require := require.New(t)
 	cs := newCipherState(cipher.ChaChaPoly, DefaultMaxMessageSize)
 
@@ -94,7 +110,7 @@ func TestCipherStateRekey(t *testing.T) {
 	require.NotEqual(ciphertext, newCiphertext, "rekey actually changed key")
 }
 
-func TestCipherStateReset(t *testing.T) {
+func testCipherStateReset(t *testing.T) {
 	// The main purpose of this test is to exercise the code that invokes
 	// cipher.Resetable().
 	require := require.New(t)
@@ -107,7 +123,7 @@ func TestCipherStateReset(t *testing.T) {
 	require.Nil(cs.aead, "cs.Reset()")
 }
 
-func TestCipherStateAuth(t *testing.T) {
+func testCipherStateAuth(t *testing.T) {
 	require := require.New(t)
 	cs := newCipherState(cipher.DeoxysII, DefaultMaxMessageSize)
 

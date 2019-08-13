@@ -262,9 +262,3 @@ func mustParsePrivateKey(t *testing.T, dhImpl dh.DH, raw []byte) dh.Keypair {
 
 	panic("NOT REACHED")
 }
-
-type failReader struct{}
-
-func (r *failReader) Read(p []byte) (int, error) {
-	panic("test case attempted entropy source read")
-}
