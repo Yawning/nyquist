@@ -74,8 +74,12 @@ Several non-standard protocol extensions are supported by this implementation:
  * A Cipher implementation backed by the Deoxys-II-256-128 MRAE primitive
    is provided.
 
+The test vectors under `testdata` were shamelessly stolen out of the Snow[6]
+repository.
+
 [1]: https://noiseprotocol.org/
 [2]: https://gitlab.com/yawning/bsaes
 [3]: https://github.com/oasislabs/ed25519
 [4]: https://gitlab.com/yawning/x448
 [5]: https://github.com/oasislabs/deoxysii
+[6]: https://github.com/mcginty/snow/tree/master/tests/vectors
