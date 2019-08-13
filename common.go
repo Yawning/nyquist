@@ -1,5 +1,5 @@
 // Package nyquist implements the Noise Protocol Framework.
-package nyquist
+package nyquist // import "gitlab.com/yawning/nyquist.git"
 
 import (
 	"errors"

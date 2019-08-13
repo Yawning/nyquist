@@ -1,6 +1,6 @@
 // Package pattern implements the Noise Protocol Framework handshake pattern
 // abstract interface and standard patterns.
-package pattern
+package pattern // import "gitlab.com/yawning/nyquist.git/pattern"
 
 import "fmt"
 

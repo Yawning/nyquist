@@ -1,5 +1,5 @@
 // Package vectors provides types for the JSON formatted test vectors.
-package vectors
+package vectors // import "gitlab.com/yawning/nyquist.git/vectors"
 
 // Message is a test vector handshake message.
 type Message struct {
