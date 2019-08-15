@@ -26,22 +26,6 @@ use this situation should not occur ("normal" being defined as, "Yes, it
 will panic if an invalid configuration is provided when initializing a
 handshake").
 
-Several uncommon cryptography libraries are used by this implementation,
-some replacing functionality provided by the runtime.  It is possible to
-use the runtime equivalents if desired, by implementing the appropriate
-interfaces.
-
- * [bsaes][2] Provides a constant time AES256-GCM.  The runtime library's
-   implementation of both AES and GHASH is insecure on systems without
-   hardware support and dedicated assembly language implementations.
-
- * [ed25519][3] Provides a significantly faster X25519 scalar basepoint
-   multiply on supported platforms.
-
- * [x448][4] Provides a (slow) X448 implementation.
-
- * [deoxysii][5] Provides a Deoxys-II-256-128 implementation.
-
 Several non-standard protocol extensions are supported by this implementation:
 
  * The maximum message size can be set to an arbitrary value or entirely
@@ -74,12 +58,8 @@ Several non-standard protocol extensions are supported by this implementation:
  * A Cipher implementation backed by the Deoxys-II-256-128 MRAE primitive
    is provided.
 
-The test vectors under `testdata` were shamelessly stolen out of the [Snow][6]
+The test vectors under `testdata` were shamelessly stolen out of the [Snow][2]
 repository.
 
 [1]: https://noiseprotocol.org/
-[2]: https://gitlab.com/yawning/bsaes
-[3]: https://github.com/oasislabs/ed25519
-[4]: https://gitlab.com/yawning/x448
-[5]: https://github.com/oasislabs/deoxysii
-[6]: https://github.com/mcginty/snow/tree/master/tests/vectors
+[2]: https://github.com/mcginty/snow/tree/master/tests/vectors
