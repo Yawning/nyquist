@@ -217,9 +217,9 @@ func configsFromVector(t *testing.T, v *vectors.Vector) (*HandshakeConfig, *Hand
 		IsInitiator:    true,
 	}
 
-	if protocol.Pattern.IsPSK() {
-		require.Len(v.InitPsks, 1, "test vector has 1 InitPsks")
-		initCfg.PreSharedKey = []byte(v.InitPsks[0])
+	require.Len(v.InitPsks, protocol.Pattern.NumPSKs(), "test vector has the expected number of InitPsks")
+	for _, psk := range v.InitPsks {
+		initCfg.PreSharedKeys = append(initCfg.PreSharedKeys, []byte(psk))
 	}
 
 	// Responder side.
@@ -249,9 +249,9 @@ func configsFromVector(t *testing.T, v *vectors.Vector) (*HandshakeConfig, *Hand
 		IsInitiator:    false,
 	}
 
-	if protocol.Pattern.IsPSK() {
-		require.Len(v.RespPsks, 1, "test vector has 1 RespPsks")
-		respCfg.PreSharedKey = []byte(v.RespPsks[0])
+	require.Len(v.RespPsks, protocol.Pattern.NumPSKs(), "test vector has the expected number of RespPsks")
+	for _, psk := range v.RespPsks {
+		respCfg.PreSharedKeys = append(respCfg.PreSharedKeys, []byte(psk))
 	}
 
 	return initCfg, respCfg

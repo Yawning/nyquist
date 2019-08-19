@@ -156,7 +156,7 @@ var (
 			Message{Token_psk, Token_e},
 			Message{Token_e, Token_ee},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// NNpsk2 is the NNpsk2 interactive (fundemental) pattern.
@@ -166,7 +166,7 @@ var (
 			Message{Token_e},
 			Message{Token_e, Token_ee, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// NKpsk0 is the NKpsk0 interactive (fundemental) pattern.
@@ -180,7 +180,7 @@ var (
 			Message{Token_psk, Token_e, Token_es},
 			Message{Token_e, Token_ee},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// NKpsk2 is the NKpsk2 interactive (fundemental) pattern.
@@ -194,7 +194,7 @@ var (
 			Message{Token_e, Token_es},
 			Message{Token_e, Token_ee, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// NXpsk2 is the NXpsk2 interactive (fundemental) pattern.
@@ -204,7 +204,7 @@ var (
 			Message{Token_e},
 			Message{Token_e, Token_ee, Token_s, Token_es, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// XNpsk3 is the XNpsk3 interactive (fundemental) pattern.
@@ -215,7 +215,7 @@ var (
 			Message{Token_e, Token_ee},
 			Message{Token_s, Token_se, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// XKpsk3 is the XKpsk3 interactive (fundemental) pattern.
@@ -230,7 +230,7 @@ var (
 			Message{Token_e, Token_ee},
 			Message{Token_s, Token_se, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// XXpsk3 is the XXpsk3 interactive (fundemental) pattern.
@@ -241,7 +241,7 @@ var (
 			Message{Token_e, Token_ee, Token_s, Token_es},
 			Message{Token_s, Token_se, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// KNpsk0 is the KNpsk0 interactive (fundemental) pattern.
@@ -254,7 +254,7 @@ var (
 			Message{Token_psk, Token_e},
 			Message{Token_e, Token_ee, Token_se},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// KNpsk2 is the KNpsk2 interactive (fundemental) pattern.
@@ -267,7 +267,7 @@ var (
 			Message{Token_e},
 			Message{Token_e, Token_ee, Token_se, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// KKpsk0 is the KKpsk0 interactive (fundemental) pattern.
@@ -281,7 +281,7 @@ var (
 			Message{Token_psk, Token_e, Token_es, Token_ss},
 			Message{Token_e, Token_ee, Token_se},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// KKpsk2 is the KKpsk2 interactive (fundemental) pattern.
@@ -295,7 +295,7 @@ var (
 			Message{Token_e, Token_es, Token_ss},
 			Message{Token_e, Token_ee, Token_se, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// KXpsk2 is the KXpsk2 interactive (fundemental) pattern.
@@ -308,7 +308,7 @@ var (
 			Message{Token_e},
 			Message{Token_e, Token_ee, Token_se, Token_s, Token_es, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// INpsk1 is the INpsk1 interactive (fundemental) pattern.
@@ -318,7 +318,7 @@ var (
 			Message{Token_e, Token_s, Token_psk},
 			Message{Token_e, Token_ee, Token_se},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// INpsk2 is the INpsk2 interactive (fundemental) pattern.
@@ -328,7 +328,7 @@ var (
 			Message{Token_e, Token_s},
 			Message{Token_e, Token_ee, Token_se, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// IKpsk1 is the IKpsk1 interactive (fundemental) pattern.
@@ -342,7 +342,7 @@ var (
 			Message{Token_e, Token_es, Token_s, Token_ss, Token_psk},
 			Message{Token_e, Token_ee, Token_se},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// IKpsk2 is the IKpsk2 interactive (fundemental) pattern.
@@ -356,7 +356,7 @@ var (
 			Message{Token_e, Token_es, Token_s, Token_ss},
 			Message{Token_e, Token_ee, Token_se, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 
 	// IXpsk2 is the IXpsk2 interactive (fundemental) pattern.
@@ -366,6 +366,6 @@ var (
 			Message{Token_e, Token_s},
 			Message{Token_e, Token_ee, Token_se, Token_s, Token_es, Token_psk},
 		},
-		isPSK: true,
+		numPSKs: 1,
 	}
 )

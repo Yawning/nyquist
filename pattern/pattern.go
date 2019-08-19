@@ -135,8 +135,8 @@ type Pattern interface {
 	// Mesages returns the message patterns.
 	Messages() []Message
 
-	// IsPSK returns true iff the pattern has a `psk` modifier.
-	IsPSK() bool
+	// NumPSKs returns the number of `psk` modifiers in the pattern.
+	NumPSKs() int
 
 	// IsOneWay returns true iff the pattern is one-way.
 	IsOneWay() bool
@@ -151,7 +151,7 @@ type builtIn struct {
 	name        string
 	preMessages []Message
 	messages    []Message
-	isPSK       bool
+	numPSKs     int
 	isOneWay    bool
 }
 
@@ -167,8 +167,8 @@ func (pa *builtIn) Messages() []Message {
 	return pa.messages
 }
 
-func (pa *builtIn) IsPSK() bool {
-	return pa.isPSK
+func (pa *builtIn) NumPSKs() int {
+	return pa.numPSKs
 }
 
 func (pa *builtIn) IsOneWay() bool {

@@ -75,7 +75,7 @@ func IsValid(pa Pattern) error {
 	if pa.IsOneWay() && len(messages) != 1 {
 		return errors.New("nyquist/pattern: excessive messages for one-way pattern")
 	}
-	var numDHs int
+	var numDHs, numPSKs int
 	for i, msg := range messages {
 		m, isInitiator, side := getSide(i)
 		for _, v := range msg {
@@ -94,12 +94,7 @@ func IsValid(pa Pattern) error {
 				}
 				numDHs++
 			case Token_psk:
-				// Technically the spec supports multiple PSKs, though no
-				// standard patterns are defined at this time.  Some
-				// implementations support this, this one does not.
-				if inEither(v) {
-					return fmt.Errorf("nyquist/pattern: redundant pre-shared key")
-				}
+				numPSKs++
 			default:
 				return fmt.Errorf("nyquist/pattern: invalid message token: %s", v)
 			}
@@ -174,8 +169,8 @@ func IsValid(pa Pattern) error {
 	}
 
 	// Make sure the PSK hint interface function is implemented correctly.
-	if inEither(Token_psk) != pa.IsPSK() {
-		return errors.New("nyquist/pattern: IsPSK() mismatch with (pre-)messages")
+	if numPSKs != pa.NumPSKs() {
+		return errors.New("nyquist/pattern: NumPSKs() mismatch with (pre-)messages")
 	}
 
 	return nil

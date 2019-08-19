@@ -65,7 +65,7 @@ var (
 		messages: []Message{
 			Message{Token_psk, Token_e, Token_es},
 		},
-		isPSK:    true,
+		numPSKs:  1,
 		isOneWay: true,
 	}
 
@@ -79,7 +79,7 @@ var (
 		messages: []Message{
 			Message{Token_psk, Token_e, Token_es, Token_ss},
 		},
-		isPSK:    true,
+		numPSKs:  1,
 		isOneWay: true,
 	}
 
@@ -93,7 +93,7 @@ var (
 		messages: []Message{
 			Message{Token_e, Token_es, Token_s, Token_ss, Token_psk},
 		},
-		isPSK:    true,
+		numPSKs:  1,
 		isOneWay: true,
 	}
 )

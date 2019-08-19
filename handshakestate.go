@@ -39,6 +39,11 @@ const (
 	protocolPrefix = "Noise"
 )
 
+var (
+	errMissingPSK = errors.New("nyquist/New: missing or excessive PreSharedKey(s)")
+	errBadPSK     = errors.New("nyquist/New: malformed PreSharedKey(s)")
+)
+
 // Protocol is a the protocol to be used with a handshake.
 type Protocol struct {
 	Pattern pattern.Pattern
@@ -118,8 +123,9 @@ type HandshakeConfig struct {
 	// RemoteEphemeral is the remote ephemeral public key, if any (`re`).
 	RemoteEphemeral dh.PublicKey
 
-	// PreSharedKey is the pre-shared symmetric key for PSK mode handshakes.
-	PreSharedKey []byte
+	// PreSharedKeys is the vector of pre-shared symmetric key for PSK mode
+	// handshakes.
+	PreSharedKeys [][]byte
 
 	// Observer is the optional handshake observer.
 	Observer HandshakeObserver
@@ -217,6 +223,7 @@ type HandshakeState struct {
 	status *HandshakeStatus
 
 	patternIndex   int
+	pskIndex       int
 	maxMessageSize int
 	dhLen          int
 	isInitiator    bool
@@ -264,7 +271,7 @@ func (hs *HandshakeState) onWriteTokenE(dst []byte) []byte {
 	}
 	eBytes := hs.e.Public().Bytes()
 	hs.ss.MixHash(eBytes)
-	if hs.cfg.Protocol.Pattern.IsPSK() {
+	if hs.cfg.Protocol.Pattern.NumPSKs() > 0 {
 		hs.ss.MixKey(eBytes)
 	}
 	hs.status.LocalEphemeral = hs.e.Public()
@@ -287,7 +294,7 @@ func (hs *HandshakeState) onReadTokenE(payload []byte) []byte {
 		}
 	}
 	hs.ss.MixHash(eBytes)
-	if hs.cfg.Protocol.Pattern.IsPSK() {
+	if hs.cfg.Protocol.Pattern.NumPSKs() > 0 {
 		hs.ss.MixKey(eBytes)
 	}
 	return tail
@@ -380,7 +387,8 @@ func (hs *HandshakeState) onTokenSS() {
 
 func (hs *HandshakeState) onTokenPsk() {
 	// PSK is validated at handshake creation.
-	hs.ss.MixKeyAndHash(hs.cfg.PreSharedKey)
+	hs.ss.MixKeyAndHash(hs.cfg.PreSharedKeys[hs.pskIndex])
+	hs.pskIndex++
 }
 
 func (hs *HandshakeState) onDone(dst []byte) ([]byte, error) {
@@ -553,7 +561,7 @@ func (hs *HandshakeState) handlePreMessages() error {
 				}
 				pkBytes := keys.e.Bytes()
 				hs.ss.MixHash(pkBytes)
-				if hs.cfg.Protocol.Pattern.IsPSK() {
+				if hs.cfg.Protocol.Pattern.NumPSKs() > 0 {
 					hs.ss.MixKey(pkBytes)
 				}
 			case pattern.Token_s:
@@ -576,9 +584,12 @@ func (hs *HandshakeState) handlePreMessages() error {
 func NewHandshake(cfg *HandshakeConfig) (*HandshakeState, error) {
 	// TODO: Validate the config further?
 
-	if cfg.Protocol.Pattern.IsPSK() {
-		if len(cfg.PreSharedKey) != PreSharedKeySize {
-			return nil, errors.New("nyquist/New: invalid or missing PreSharedKey")
+	if cfg.Protocol.Pattern.NumPSKs() != len(cfg.PreSharedKeys) {
+		return nil, errMissingPSK
+	}
+	for _, v := range cfg.PreSharedKeys {
+		if len(v) != PreSharedKeySize {
+			return nil, errBadPSK
 		}
 	}
 

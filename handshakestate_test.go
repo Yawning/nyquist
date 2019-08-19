@@ -259,8 +259,6 @@ func testHandshakeStateObserver(t *testing.T) {
 }
 
 func testHandshakeStateBadPSK(t *testing.T) {
-	const errBadPSK = "nyquist/New: invalid or missing PreSharedKey"
-
 	require := require.New(t)
 
 	protocol, err := NewProtocol("Noise_Xpsk1_25519_ChaChaPoly_BLAKE2s")
@@ -272,11 +270,13 @@ func testHandshakeStateBadPSK(t *testing.T) {
 		IsInitiator: true,
 	}
 	_, err = NewHandshake(aliceCfg)
-	require.EqualError(err, errBadPSK, "NewHandshake() - missing PSK")
+	require.Equal(errMissingPSK, err, "NewHandshake() - missing PSK")
 
-	aliceCfg.PreSharedKey = make([]byte, PreSharedKeySize+1)
+	aliceCfg.PreSharedKeys = [][]byte{
+		make([]byte, PreSharedKeySize+1),
+	}
 	_, err = NewHandshake(aliceCfg)
-	require.EqualError(err, errBadPSK, "NewHandshake() - malformed PSK")
+	require.Equal(errBadPSK, err, "NewHandshake() - malformed PSK")
 }
 
 func testHandshakeStateMissingS(t *testing.T) {
