@@ -59,6 +59,9 @@ func MakePSK(template Pattern, modifier string) (Pattern, error) {
 		if indexes[pskIndex] {
 			return nil, errors.New("nyquist/pattern: redundant PSK modifier: " + prefixPSK + v)
 		}
+		if pskIndex < 0 || pskIndex > len(templateMessages) {
+			return nil, errors.New("nyquist/pattern: invalid PSK modifier: " + prefixPSK + v)
+		}
 		switch pskIndex {
 		case 0:
 			pa.messages[0] = append(Message{Token_psk}, pa.messages[0]...)
