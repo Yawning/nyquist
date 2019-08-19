@@ -42,7 +42,7 @@ func MakePSK(template Pattern, modifier string) (Pattern, error) {
 		}
 
 		if indexes[pskIndex] {
-			return nil, errors.New("nyquist/pattern: reduntant PSK modifiler: " + prefixPSK + v)
+			return nil, errors.New("nyquist/pattern: redundant PSK modifier: " + prefixPSK + v)
 		}
 		switch pskIndex {
 		case 0:
