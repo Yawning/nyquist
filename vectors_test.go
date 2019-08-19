@@ -29,6 +29,9 @@ import (
 )
 
 func TestVectors(t *testing.T) {
+	// Register the multi-PSK suites covered by the snow test vectors.
+	t.Run("RegisterMultiPSK", doRegisterMultiPSK)
+
 	srcImpls := []string{
 		"cacophony",
 		"snow",
@@ -38,6 +41,35 @@ func TestVectors(t *testing.T) {
 		t.Run(v, func(t *testing.T) {
 			doTestVectorsFile(t, v)
 		})
+	}
+}
+
+func doRegisterMultiPSK(t *testing.T) {
+	require := require.New(t)
+
+	for _, v := range []struct {
+		base     pattern.Pattern
+		modifier string
+	}{
+		{pattern.NN, "psk0+psk2"},
+		{pattern.NX, "psk0+psk1+psk2"},
+		{pattern.XN, "psk1+psk3"},
+		{pattern.XK, "psk0+psk3"},
+		{pattern.KN, "psk1+psk2"},
+		{pattern.KK, "psk0+psk2"},
+		{pattern.IN, "psk1+psk2"},
+		{pattern.IK, "psk0+psk2"},
+		{pattern.IX, "psk0+psk2"},
+		{pattern.XX, "psk0+psk1"},
+		{pattern.XX, "psk0+psk2"},
+		{pattern.XX, "psk0+psk3"},
+		{pattern.XX, "psk0+psk1+psk2+psk3"},
+	} {
+		pa, err := pattern.MakePSK(v.base, v.modifier)
+		require.NoError(err, "MakePSK(%s, %s)", v.base.String(), v.modifier)
+
+		err = pattern.Register(pa)
+		require.NoError(err, "Register(%s)", pa)
 	}
 }
 
