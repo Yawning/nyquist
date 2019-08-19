@@ -56,6 +56,9 @@ type DH interface {
 	// provided entropy source.
 	GenerateKeypair(rng io.Reader) (Keypair, error)
 
+	// ParsePrivateKey parses a binary encoded private key.
+	ParsePrivateKey(data []byte) (Keypair, error)
+
 	// ParsePublicKey parses a binary encoded public key.
 	ParsePublicKey(data []byte) (PublicKey, error)
 
@@ -112,6 +115,15 @@ func (dh *dh25519) GenerateKeypair(rng io.Reader) (Keypair, error) {
 	}
 
 	x25519.ScalarBaseMult(&kp.publicKey.rawPublicKey, &kp.rawPrivateKey)
+
+	return &kp, nil
+}
+
+func (dh *dh25519) ParsePrivateKey(data []byte) (Keypair, error) {
+	var kp Keypair25519
+	if err := kp.UnmarshalBinary(data); err != nil {
+		return nil, err
+	}
 
 	return &kp, nil
 }
@@ -224,6 +236,15 @@ func (dh *dh448) GenerateKeypair(rng io.Reader) (Keypair, error) {
 	}
 
 	x448.ScalarBaseMult(&kp.publicKey.rawPublicKey, &kp.rawPrivateKey)
+
+	return &kp, nil
+}
+
+func (dh *dh448) ParsePrivateKey(data []byte) (Keypair, error) {
+	var kp Keypair448
+	if err := kp.UnmarshalBinary(data); err != nil {
+		return nil, err
+	}
 
 	return &kp, nil
 }

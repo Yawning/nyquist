@@ -233,12 +233,14 @@ func configsFromVector(t *testing.T, v *vectors.Vector, skipOk bool) (*Handshake
 	// Initiator side.
 	var initStatic dh.Keypair
 	if len(v.InitStatic) != 0 {
-		initStatic = mustParsePrivateKey(t, protocol.DH, v.InitStatic)
+		initStatic, err = protocol.DH.ParsePrivateKey(v.InitStatic)
+		require.NoError(err, "parse InitStatic")
 	}
 
 	var initEphemeral dh.Keypair
 	if len(v.InitEphemeral) != 0 {
-		initEphemeral = mustParsePrivateKey(t, protocol.DH, v.InitEphemeral)
+		initEphemeral, err = protocol.DH.ParsePrivateKey(v.InitEphemeral)
+		require.NoError(err, "parse InitEphemeral")
 	}
 
 	var initRemoteStatic dh.PublicKey
@@ -265,12 +267,14 @@ func configsFromVector(t *testing.T, v *vectors.Vector, skipOk bool) (*Handshake
 	// Responder side.
 	var respStatic dh.Keypair
 	if len(v.RespStatic) != 0 {
-		respStatic = mustParsePrivateKey(t, protocol.DH, v.RespStatic)
+		respStatic, err = protocol.DH.ParsePrivateKey(v.RespStatic)
+		require.NoError(err, "parse RespStatic")
 	}
 
 	var respEphemeral dh.Keypair
 	if len(v.RespEphemeral) != 0 {
-		respEphemeral = mustParsePrivateKey(t, protocol.DH, v.RespEphemeral)
+		respEphemeral, err = protocol.DH.ParsePrivateKey(v.RespEphemeral)
+		require.NoError(err, "parse RespEphemeral")
 	}
 
 	var respRemoteStatic dh.PublicKey
@@ -295,25 +299,4 @@ func configsFromVector(t *testing.T, v *vectors.Vector, skipOk bool) (*Handshake
 	}
 
 	return initCfg, respCfg
-}
-
-func mustParsePrivateKey(t *testing.T, dhImpl dh.DH, raw []byte) dh.Keypair {
-	require := require.New(t)
-
-	switch dhImpl.String() {
-	case "25519":
-		var kp dh.Keypair25519
-		err := kp.UnmarshalBinary(raw)
-		require.NoError(err, "parse X25519 private key")
-		return &kp
-	case "448":
-		var kp dh.Keypair448
-		err := kp.UnmarshalBinary(raw)
-		require.NoError(err, "parse X448 private key")
-		return &kp
-	default:
-		require.Fail("failed to parse private key, unknown type")
-	}
-
-	panic("NOT REACHED")
 }
