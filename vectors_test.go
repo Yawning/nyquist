@@ -32,14 +32,18 @@ func TestVectors(t *testing.T) {
 	// Register the multi-PSK suites covered by the snow test vectors.
 	t.Run("RegisterMultiPSK", doRegisterMultiPSK)
 
-	srcImpls := []string{
-		"cacophony",
-		"snow",
+	srcImpls := []struct {
+		name   string
+		skipOk bool
+	}{
+		{"cacophony", false},
+		{"snow", false},
+		{"noise-c-basic", true}, // PSK patterns use a non-current name.
 	}
 
 	for _, v := range srcImpls {
-		t.Run(v, func(t *testing.T) {
-			doTestVectorsFile(t, v)
+		t.Run(v.name, func(t *testing.T) {
+			doTestVectorsFile(t, v.name, v.skipOk)
 		})
 	}
 }
@@ -73,7 +77,7 @@ func doRegisterMultiPSK(t *testing.T) {
 	}
 }
 
-func doTestVectorsFile(t *testing.T, impl string) {
+func doTestVectorsFile(t *testing.T, impl string, skipOk bool) {
 	require := require.New(t)
 	fn := filepath.Join("./testdata/", impl+".txt")
 	b, err := ioutil.ReadFile(fn)
@@ -88,15 +92,19 @@ func doTestVectorsFile(t *testing.T, impl string) {
 			v.Name = v.ProtocolName
 		}
 		if v.ProtocolName == "" {
+			// The noise-c test vectors have `name` but not `protocol_name`.
+			v.ProtocolName = v.Name
+		}
+		if v.ProtocolName == "" {
 			continue
 		}
 		t.Run(v.Name, func(t *testing.T) {
-			doTestVector(t, &v)
+			doTestVector(t, &v, skipOk)
 		})
 	}
 }
 
-func doTestVector(t *testing.T, v *vectors.Vector) {
+func doTestVector(t *testing.T, v *vectors.Vector, skipOk bool) {
 	if v.Fail {
 		t.Skip("fail tests not supported")
 	}
@@ -105,7 +113,7 @@ func doTestVector(t *testing.T, v *vectors.Vector) {
 	}
 
 	require := require.New(t)
-	initCfg, respCfg := configsFromVector(t, v)
+	initCfg, respCfg := configsFromVector(t, v, skipOk)
 
 	initHs, err := NewHandshake(initCfg)
 	require.NoError(err, "NewHandshake(initCfg)")
@@ -209,12 +217,12 @@ func doTestVectorMessages(t *testing.T, hs *HandshakeState, v *vectors.Vector) {
 	}
 }
 
-func configsFromVector(t *testing.T, v *vectors.Vector) (*HandshakeConfig, *HandshakeConfig) {
+func configsFromVector(t *testing.T, v *vectors.Vector, skipOk bool) (*HandshakeConfig, *HandshakeConfig) {
 	require := require.New(t)
 
 	protoName := v.ProtocolName
 	protocol, err := NewProtocol(protoName)
-	if err == ErrProtocolNotSupported {
+	if err == ErrProtocolNotSupported && skipOk {
 		t.Skipf("protocol not supported")
 	}
 	require.NoError(err, "NewProtocol(%v)", protoName)
