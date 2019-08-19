@@ -94,11 +94,11 @@ func testHandshakeStateBadProtocol(t *testing.T) {
 
 	var nilProtocol Protocol
 	s := nilProtocol.String()
-	require.Equal("[invalid protocol]", s, "Bad protocol object String()s")
+	require.Equal(invalidProtocol, s, "Bad protocol object String()s")
 
 	protocol, err := NewProtocol("Signal_XX_25519_ChaChaPoly_BLAKE2s")
 	require.Nil(protocol, "NewProtocol(invalid)")
-	require.EqualError(err, "nyquist: malformed protocol name", "NewProtocol(invalid)")
+	require.Equal(ErrProtocolNotSupported, err, "NewProtocol(invalid)")
 }
 
 func testHandshakeStateKeygenFailure(t *testing.T) {
@@ -131,7 +131,7 @@ func testHandshakeStateTruncatedE(t *testing.T) {
 	_, bobHs := mustMakeX(t, 0)
 	dst, err := bobHs.ReadMessage(nil, make([]byte, 31))
 	require.Nil(dst, "bobHs.ReadMessage - truncated E")
-	require.EqualError(err, "nyquist/HandshakeState/ReadMessage/e: truncated message")
+	require.Equal(errTruncatedE, err)
 }
 
 func testHandshakeStateTruncatedS(t *testing.T) {
@@ -144,7 +144,7 @@ func testHandshakeStateTruncatedS(t *testing.T) {
 
 	dst, err = bobHs.ReadMessage(nil, dst[:32+32]) // Clip off both tags.
 	require.Nil(dst, "bobHs.ReadMessage - truncated s")
-	require.EqualError(err, "nyquist/HandshakeState/ReadMessage/s: truncated message")
+	require.Equal(errTruncatedS, err)
 }
 
 func testHandshakeStateOutOfOrder(t *testing.T) {
@@ -296,6 +296,6 @@ func testHandshakeStateMissingS(t *testing.T) {
 	aliceHs, _ := mustMakeX(t, 0)
 	aliceHs.s = nil // Not the best way to do this, but this also works.
 	dst, err := aliceHs.WriteMessage(nil, nil)
-	require.EqualError(err, "nyquist/HandshakeState/WriteMessage/s: s not set", "aliceHs.WriteMessage()")
+	require.Equal(errMissingS, err, "aliceHs.WriteMessage()")
 	require.Nil(dst, "aliceHs.WriteMessage()")
 }

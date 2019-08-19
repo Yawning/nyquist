@@ -31,7 +31,12 @@ const (
 	maxnonce = math.MaxUint64
 )
 
-var zeroes [32]byte
+var (
+	errInvalidKeySize = errors.New("nyquist/CipherState: invalid key size")
+	errNoExistingKey  = errors.New("nyquist/CipherState: failed to rekey, no existing key")
+
+	zeroes [32]byte
+)
 
 // CipherState is a keyed AEAD algorithm instance.
 type CipherState struct {
@@ -69,7 +74,7 @@ func (cs *CipherState) setKey(key []byte) error {
 		cs.k = make([]byte, SymmetricKeySize)
 		copy(cs.k, key)
 	default:
-		return errors.New("nyquist/CipherState: invalid key size")
+		return errInvalidKeySize
 	}
 
 	return nil
@@ -144,7 +149,7 @@ func (cs *CipherState) DecryptWithAd(dst, ad, ciphertext []byte) ([]byte, error)
 // Rekey sets the CipherState's key to `REKEY(k)`.
 func (cs *CipherState) Rekey() error {
 	if !cs.HasKey() {
-		return errors.New("nyquist/cipherstate: failed to rekey, no existing key")
+		return errNoExistingKey
 	}
 
 	var newKey []byte

@@ -107,7 +107,7 @@ func testCipherStateRekey(t *testing.T) {
 	cs := newCipherState(cipher.ChaChaPoly, DefaultMaxMessageSize)
 
 	err := cs.Rekey()
-	require.Error(err, "cs.Rekey() - no key")
+	require.Equal(errNoExistingKey, err, "cs.Rekey() - no key")
 
 	testPlaintext := []byte("rekey test plaintext")
 

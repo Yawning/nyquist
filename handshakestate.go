@@ -36,10 +36,15 @@ const (
 	// PreSharedKeySize is the size of the pre-shared symmetric key.
 	PreSharedKeySize = 32
 
-	protocolPrefix = "Noise"
+	protocolPrefix  = "Noise"
+	invalidProtocol = "[invalid protocol]"
 )
 
 var (
+	errTruncatedE = errors.New("nyquist/HandshakeState/ReadMessage/e: truncated message")
+	errTruncatedS = errors.New("nyquist/HandshakeState/ReadMessage/s: truncated message")
+	errMissingS   = errors.New("nyquist/HandshakeState/WriteMessage/s: s not set")
+
 	errMissingPSK = errors.New("nyquist/New: missing or excessive PreSharedKey(s)")
 	errBadPSK     = errors.New("nyquist/New: malformed PreSharedKey(s)")
 )
@@ -56,7 +61,7 @@ type Protocol struct {
 // String returns the string representation of the protocol name.
 func (pr *Protocol) String() string {
 	if pr.Pattern == nil || pr.DH == nil || pr.Cipher == nil || pr.Hash == nil {
-		return "[invalid protocol]"
+		return invalidProtocol
 	}
 
 	parts := []string{
@@ -79,7 +84,7 @@ func (pr *Protocol) String() string {
 func NewProtocol(s string) (*Protocol, error) {
 	parts := strings.Split(s, "_")
 	if len(parts) != 5 || parts[0] != protocolPrefix {
-		return nil, errors.New("nyquist: malformed protocol name")
+		return nil, ErrProtocolNotSupported
 	}
 
 	var pr Protocol
@@ -280,7 +285,7 @@ func (hs *HandshakeState) onWriteTokenE(dst []byte) []byte {
 
 func (hs *HandshakeState) onReadTokenE(payload []byte) []byte {
 	if len(payload) < hs.dhLen {
-		hs.status.Err = errors.New("nyquist/HandshakeState/ReadMessage/e: truncated message")
+		hs.status.Err = errTruncatedE
 		return nil
 	}
 	eBytes, tail := payload[:hs.dhLen], payload[hs.dhLen:]
@@ -302,7 +307,7 @@ func (hs *HandshakeState) onReadTokenE(payload []byte) []byte {
 
 func (hs *HandshakeState) onWriteTokenS(dst []byte) []byte {
 	if hs.s == nil {
-		hs.status.Err = errors.New("nyquist/HandshakeState/WriteMessage/s: s not set")
+		hs.status.Err = errMissingS
 		return nil
 	}
 	sBytes := hs.s.Public().Bytes()
@@ -318,7 +323,7 @@ func (hs *HandshakeState) onReadTokenS(payload []byte) []byte {
 		tempLen += hs.ss.cs.aead.Overhead()
 	}
 	if len(payload) < tempLen {
-		hs.status.Err = errors.New("nyquist/HandshakeState/ReadMessage/s: truncated message")
+		hs.status.Err = errTruncatedS
 		return nil
 	}
 	temp, tail := payload[:tempLen], payload[tempLen:]
