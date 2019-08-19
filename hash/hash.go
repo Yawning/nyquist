@@ -121,3 +121,8 @@ func (h *hashBlake2b) New() hash.Hash {
 func (h *hashBlake2b) Size() int {
 	return blake2b.Size
 }
+
+// Register registers a new hash algorithm for use with `FromString()`.
+func Register(hash Hash) {
+	supportedHashes[hash.String()] = hash
+}

@@ -319,3 +319,8 @@ func (pk *PublicKey448) UnmarshalBinary(data []byte) error {
 func (pk *PublicKey448) Bytes() []byte {
 	return pk.rawPublicKey[:]
 }
+
+// Register registers a new Diffie-Hellman algorithm for use with `FromString()`.
+func Register(dh DH) {
+	supportedDHs[dh.String()] = dh
+}

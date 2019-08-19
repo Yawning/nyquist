@@ -137,3 +137,8 @@ func (ci *cipherDeoxysII) EncodeNonce(nonce uint64) []byte {
 	binary.BigEndian.PutUint64(encodedNonce[7:], nonce)
 	return encodedNonce[:]
 }
+
+// Register registers a new cipher for use with `FromString()`.
+func Register(cipher Cipher) {
+	supportedCiphers[cipher.String()] = cipher
+}
