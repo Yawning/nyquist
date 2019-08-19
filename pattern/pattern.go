@@ -19,72 +19,7 @@ package pattern // import "gitlab.com/yawning/nyquist.git/pattern"
 
 import "fmt"
 
-var supportedPatterns = map[string]Pattern{
-	// One-way patterns.
-	"N":     N,
-	"K":     K,
-	"X":     X,
-	"Npsk0": Npsk0,
-	"Kpsk0": Kpsk0,
-	"Xpsk1": Xpsk1,
-
-	// Interactive (fundemental) patterns.
-	"NN":     NN,
-	"NK":     NK,
-	"NX":     NX,
-	"XN":     XN,
-	"XK":     XK,
-	"XX":     XX,
-	"KN":     KN,
-	"KK":     KK,
-	"KX":     KX,
-	"IN":     IN,
-	"IK":     IK,
-	"IX":     IX,
-	"NNpsk0": NNpsk0,
-	"NNpsk2": NNpsk2,
-	"NKpsk0": NKpsk0,
-	"NKpsk2": NKpsk2,
-	"NXpsk2": NXpsk2,
-	"XNpsk3": XNpsk3,
-	"XKpsk3": XKpsk3,
-	"XXpsk3": XXpsk3,
-	"KNpsk0": KNpsk0,
-	"KNpsk2": KNpsk2,
-	"KKpsk0": KKpsk0,
-	"KKpsk2": KKpsk2,
-	"KXpsk2": KXpsk2,
-	"INpsk1": INpsk1,
-	"INpsk2": INpsk2,
-	"IKpsk1": IKpsk1,
-	"IKpsk2": IKpsk2,
-	"IXpsk2": IXpsk2,
-
-	// Deferred patterns.
-	"NK1":  NK1,
-	"NX1":  NX1,
-	"X1N":  X1N,
-	"X1K":  X1K,
-	"XK1":  XK1,
-	"X1K1": X1K1,
-	"X1X":  X1X,
-	"XX1":  XX1,
-	"X1X1": X1X1,
-	"K1N":  K1N,
-	"K1K":  K1K,
-	"KK1":  KK1,
-	"K1K1": K1K1,
-	"K1X":  K1X,
-	"KX1":  KX1,
-	"K1X1": K1X1,
-	"I1N":  I1N,
-	"I1K":  I1K,
-	"IK1":  IK1,
-	"I1K1": I1K1,
-	"I1X":  I1X,
-	"IX1":  IX1,
-	"I1X1": I1X1,
-}
+var supportedPatterns = make(map[string]Pattern)
 
 // Token is a Noise handshake pattern token.
 type Token uint8
@@ -176,11 +111,84 @@ func (pa *builtIn) IsOneWay() bool {
 }
 
 // Register registers a new pattern for use with `FromString()`.
-func Register(pattern Pattern) error {
-	if err := IsValid(pattern); err != nil {
+func Register(pa Pattern) error {
+	if err := IsValid(pa); err != nil {
 		return err
 	}
-	supportedPatterns[pattern.String()] = pattern
+	supportedPatterns[pa.String()] = pa
 
 	return nil
+}
+
+func init() {
+	for _, v := range []Pattern{
+		// One-way patterns.
+		N,
+		K,
+		X,
+		Npsk0,
+		Kpsk0,
+		Xpsk1,
+
+		// Interactive (fundemental) patterns.
+		NN,
+		NK,
+		NX,
+		XN,
+		XK,
+		XX,
+		KN,
+		KK,
+		KX,
+		IN,
+		IK,
+		IX,
+		NNpsk0,
+		NNpsk2,
+		NKpsk0,
+		NKpsk2,
+		NXpsk2,
+		XNpsk3,
+		XKpsk3,
+		XXpsk3,
+		KNpsk0,
+		KNpsk2,
+		KKpsk0,
+		KKpsk2,
+		KXpsk2,
+		INpsk1,
+		INpsk2,
+		IKpsk1,
+		IKpsk2,
+		IXpsk2,
+
+		// Deferred patterns.
+		NK1,
+		NX1,
+		X1N,
+		X1K,
+		XK1,
+		X1K1,
+		X1X,
+		XX1,
+		X1X1,
+		K1N,
+		K1K,
+		KK1,
+		K1K1,
+		K1X,
+		KX1,
+		K1X1,
+		I1N,
+		I1K,
+		IK1,
+		I1K1,
+		I1X,
+		IX1,
+		I1X1,
+	} {
+		if err := Register(v); err != nil {
+			panic("nyquist/pattern: failed to register built-in pattern: " + err.Error())
+		}
+	}
 }
