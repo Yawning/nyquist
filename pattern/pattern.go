@@ -174,3 +174,13 @@ func (pa *builtIn) NumPSKs() int {
 func (pa *builtIn) IsOneWay() bool {
 	return pa.isOneWay
 }
+
+// Register registers a new pattern for use with `FromString()`.
+func Register(pattern Pattern) error {
+	if err := IsValid(pattern); err != nil {
+		return err
+	}
+	supportedPatterns[pattern.String()] = pattern
+
+	return nil
+}

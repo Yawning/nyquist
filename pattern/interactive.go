@@ -150,222 +150,56 @@ var (
 	}
 
 	// NNpsk0 is the NNpsk0 interactive (fundemental) pattern.
-	NNpsk0 Pattern = &builtIn{
-		name: "NNpsk0",
-		messages: []Message{
-			Message{Token_psk, Token_e},
-			Message{Token_e, Token_ee},
-		},
-		numPSKs: 1,
-	}
+	NNpsk0 = mustMakePSK(NN, "psk0")
 
 	// NNpsk2 is the NNpsk2 interactive (fundemental) pattern.
-	NNpsk2 Pattern = &builtIn{
-		name: "NNpsk2",
-		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	NNpsk2 = mustMakePSK(NN, "psk2")
 
 	// NKpsk0 is the NKpsk0 interactive (fundemental) pattern.
-	NKpsk0 Pattern = &builtIn{
-		name: "NKpsk0",
-		preMessages: []Message{
-			nil,
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_psk, Token_e, Token_es},
-			Message{Token_e, Token_ee},
-		},
-		numPSKs: 1,
-	}
+	NKpsk0 = mustMakePSK(NK, "psk0")
 
 	// NKpsk2 is the NKpsk2 interactive (fundemental) pattern.
-	NKpsk2 Pattern = &builtIn{
-		name: "NKpsk2",
-		preMessages: []Message{
-			nil,
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_e, Token_es},
-			Message{Token_e, Token_ee, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	NKpsk2 = mustMakePSK(NK, "psk2")
 
 	// NXpsk2 is the NXpsk2 interactive (fundemental) pattern.
-	NXpsk2 Pattern = &builtIn{
-		name: "NXpsk2",
-		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee, Token_s, Token_es, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	NXpsk2 = mustMakePSK(NX, "psk2")
 
 	// XNpsk3 is the XNpsk3 interactive (fundemental) pattern.
-	XNpsk3 Pattern = &builtIn{
-		name: "XNpsk3",
-		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee},
-			Message{Token_s, Token_se, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	XNpsk3 = mustMakePSK(XN, "psk3")
 
 	// XKpsk3 is the XKpsk3 interactive (fundemental) pattern.
-	XKpsk3 Pattern = &builtIn{
-		name: "XKpsk3",
-		preMessages: []Message{
-			nil,
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_e, Token_es},
-			Message{Token_e, Token_ee},
-			Message{Token_s, Token_se, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	XKpsk3 = mustMakePSK(XK, "psk3")
 
 	// XXpsk3 is the XXpsk3 interactive (fundemental) pattern.
-	XXpsk3 Pattern = &builtIn{
-		name: "XXpsk3",
-		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee, Token_s, Token_es},
-			Message{Token_s, Token_se, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	XXpsk3 = mustMakePSK(XX, "psk3")
 
 	// KNpsk0 is the KNpsk0 interactive (fundemental) pattern.
-	KNpsk0 Pattern = &builtIn{
-		name: "KNpsk0",
-		preMessages: []Message{
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_psk, Token_e},
-			Message{Token_e, Token_ee, Token_se},
-		},
-		numPSKs: 1,
-	}
+	KNpsk0 = mustMakePSK(KN, "psk0")
 
 	// KNpsk2 is the KNpsk2 interactive (fundemental) pattern.
-	KNpsk2 Pattern = &builtIn{
-		name: "KNpsk2",
-		preMessages: []Message{
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee, Token_se, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	KNpsk2 = mustMakePSK(KN, "psk2")
 
 	// KKpsk0 is the KKpsk0 interactive (fundemental) pattern.
-	KKpsk0 Pattern = &builtIn{
-		name: "KKpsk0",
-		preMessages: []Message{
-			Message{Token_s},
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_psk, Token_e, Token_es, Token_ss},
-			Message{Token_e, Token_ee, Token_se},
-		},
-		numPSKs: 1,
-	}
+	KKpsk0 = mustMakePSK(KK, "psk0")
 
 	// KKpsk2 is the KKpsk2 interactive (fundemental) pattern.
-	KKpsk2 Pattern = &builtIn{
-		name: "KKpsk2",
-		preMessages: []Message{
-			Message{Token_s},
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_e, Token_es, Token_ss},
-			Message{Token_e, Token_ee, Token_se, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	KKpsk2 = mustMakePSK(KK, "psk2")
 
 	// KXpsk2 is the KXpsk2 interactive (fundemental) pattern.
-	KXpsk2 Pattern = &builtIn{
-		name: "KXpsk2",
-		preMessages: []Message{
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee, Token_se, Token_s, Token_es, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	KXpsk2 = mustMakePSK(KX, "psk2")
 
 	// INpsk1 is the INpsk1 interactive (fundemental) pattern.
-	INpsk1 Pattern = &builtIn{
-		name: "INpsk1",
-		messages: []Message{
-			Message{Token_e, Token_s, Token_psk},
-			Message{Token_e, Token_ee, Token_se},
-		},
-		numPSKs: 1,
-	}
+	INpsk1 = mustMakePSK(IN, "psk1")
 
 	// INpsk2 is the INpsk2 interactive (fundemental) pattern.
-	INpsk2 Pattern = &builtIn{
-		name: "INpsk2",
-		messages: []Message{
-			Message{Token_e, Token_s},
-			Message{Token_e, Token_ee, Token_se, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	INpsk2 = mustMakePSK(IN, "psk2")
 
 	// IKpsk1 is the IKpsk1 interactive (fundemental) pattern.
-	IKpsk1 Pattern = &builtIn{
-		name: "IKpsk1",
-		preMessages: []Message{
-			nil,
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_e, Token_es, Token_s, Token_ss, Token_psk},
-			Message{Token_e, Token_ee, Token_se},
-		},
-		numPSKs: 1,
-	}
+	IKpsk1 = mustMakePSK(IK, "psk1")
 
 	// IKpsk2 is the IKpsk2 interactive (fundemental) pattern.
-	IKpsk2 Pattern = &builtIn{
-		name: "IKpsk2",
-		preMessages: []Message{
-			nil,
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_e, Token_es, Token_s, Token_ss},
-			Message{Token_e, Token_ee, Token_se, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	IKpsk2 = mustMakePSK(IK, "psk2")
 
 	// IXpsk2 is the IXpsk2 interactive (fundemental) pattern.
-	IXpsk2 Pattern = &builtIn{
-		name: "IXpsk2",
-		messages: []Message{
-			Message{Token_e, Token_s},
-			Message{Token_e, Token_ee, Token_se, Token_s, Token_es, Token_psk},
-		},
-		numPSKs: 1,
-	}
+	IXpsk2 = mustMakePSK(IX, "psk2")
 )

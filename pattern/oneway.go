@@ -56,44 +56,11 @@ var (
 	}
 
 	// Npsk0 is the Npsk0 one-way handshake pattern.
-	Npsk0 Pattern = &builtIn{
-		name: "Npsk0",
-		preMessages: []Message{
-			nil,
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_psk, Token_e, Token_es},
-		},
-		numPSKs:  1,
-		isOneWay: true,
-	}
+	Npsk0 = mustMakePSK(N, "psk0")
 
 	// Kpsk0 is the Kpsk0 one-way handshake pattern.
-	Kpsk0 Pattern = &builtIn{
-		name: "Kpsk0",
-		preMessages: []Message{
-			Message{Token_s},
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_psk, Token_e, Token_es, Token_ss},
-		},
-		numPSKs:  1,
-		isOneWay: true,
-	}
+	Kpsk0 = mustMakePSK(K, "psk0")
 
 	// Xpsk1 is the Xpsk1 one-way handshake pattern.
-	Xpsk1 Pattern = &builtIn{
-		name: "Xpsk1",
-		preMessages: []Message{
-			nil,
-			Message{Token_s},
-		},
-		messages: []Message{
-			Message{Token_e, Token_es, Token_s, Token_ss, Token_psk},
-		},
-		numPSKs:  1,
-		isOneWay: true,
-	}
+	Xpsk1 = mustMakePSK(X, "psk1")
 )
