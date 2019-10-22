@@ -19,7 +19,10 @@ that is NOT implemented is "10.2. The `fallback` modifier".
 Care is taken to attempt to sanitize private key material from memory where
 possible, however due to limitations in `crypto/cipher.AEAD`, `x/crypto/hkdf`,
 `crypto/hmac`, and all of the hash functions, this is not particularly
-comprehensive.
+comprehensive.  In general given the current Go implementation(s), this
+is somewhat of a lost cause (copies on stack growth, no `memset_s`, etc),
+but the mindset taken here is "partial sanitization is better than no
+sanitization".
 
 This package will `panic` only if invariants are violated.  Under normal
 use this situation should not occur ("normal" being defined as, "Yes, it

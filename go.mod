@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/oasislabs/deoxysii v0.0.0-20190807103041-6159f99c2236
-	github.com/oasislabs/ed25519 v0.0.0-20190904142359-81304bd3162a
+	github.com/oasislabs/ed25519 v0.0.0-20191022155220-a426dcc8ad5f
 	github.com/stretchr/testify v1.3.0
 	gitlab.com/yawning/bsaes.git v0.0.0-20190805113838-0a714cd429ec
 	gitlab.com/yawning/x448.git v0.0.0-20190810030840-dcc677c7bddf
