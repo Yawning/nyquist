@@ -10,6 +10,8 @@ github.com/oasislabs/ed25519 v0.0.0-20191022155220-a426dcc8ad5f h1:d7qNaW+eJwgZ/
 github.com/oasislabs/ed25519 v0.0.0-20191022155220-a426dcc8ad5f/go.mod h1:BB2J82Ap0q/mSJZ0ALKKeQ5PTsiEoF/OSNGmwvrHrOI=
 github.com/oasislabs/ed25519 v0.0.0-20200205123356-d82bd57eb8d0 h1:mFrtm+XHssl+/B88+hyKKzUiUSpkX3oGBfyXmB+fGNo=
 github.com/oasislabs/ed25519 v0.0.0-20200205123356-d82bd57eb8d0/go.mod h1:xIpCyrK2ouGA4QBGbiNbkoONrvJ00u9P3QOkXSOAC0c=
+github.com/oasislabs/ed25519 v0.0.0-20200206134218-2893bee822a3 h1:xhsvlWpWPdHXHt8i5eaXf2WbAxHLciGqrfup6zAPjVQ=
+github.com/oasislabs/ed25519 v0.0.0-20200206134218-2893bee822a3/go.mod h1:xIpCyrK2ouGA4QBGbiNbkoONrvJ00u9P3QOkXSOAC0c=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
