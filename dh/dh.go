@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/oasislabs/ed25519/extra/x25519"
+	"github.com/oasisprotocol/curve25519-voi/primitives/x25519"
 	"gitlab.com/yawning/x448.git"
 
 	"gitlab.com/yawning/nyquist.git/internal"
