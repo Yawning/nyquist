@@ -28,7 +28,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Package dh implments the Noise Protocol Framework Diffie-Hellman function
-// abstract interface and standard hash functions.
+// abstract interface and standard DH functions.
 package dh // import "gitlab.com/yawning/nyquist.git/dh"
 
 import (
