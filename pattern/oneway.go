@@ -35,10 +35,10 @@ var (
 		name: "N",
 		preMessages: []Message{
 			nil,
-			Message{Token_s},
+			{Token_s},
 		},
 		messages: []Message{
-			Message{Token_e, Token_es},
+			{Token_e, Token_es},
 		},
 		isOneWay: true,
 	}
@@ -47,11 +47,11 @@ var (
 	K Pattern = &builtIn{
 		name: "K",
 		preMessages: []Message{
-			Message{Token_s},
-			Message{Token_s},
+			{Token_s},
+			{Token_s},
 		},
 		messages: []Message{
-			Message{Token_e, Token_es, Token_ss},
+			{Token_e, Token_es, Token_ss},
 		},
 		isOneWay: true,
 	}
@@ -61,10 +61,10 @@ var (
 		name: "X",
 		preMessages: []Message{
 			nil,
-			Message{Token_s},
+			{Token_s},
 		},
 		messages: []Message{
-			Message{Token_e, Token_es, Token_s, Token_ss},
+			{Token_e, Token_es, Token_s, Token_ss},
 		},
 		isOneWay: true,
 	}

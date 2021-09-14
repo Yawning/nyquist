@@ -34,8 +34,8 @@ var (
 	NN Pattern = &builtIn{
 		name: "NN",
 		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee},
+			{Token_e},
+			{Token_e, Token_ee},
 		},
 	}
 
@@ -44,11 +44,11 @@ var (
 		name: "NK",
 		preMessages: []Message{
 			nil,
-			Message{Token_s},
+			{Token_s},
 		},
 		messages: []Message{
-			Message{Token_e, Token_es},
-			Message{Token_e, Token_ee},
+			{Token_e, Token_es},
+			{Token_e, Token_ee},
 		},
 	}
 
@@ -56,8 +56,8 @@ var (
 	NX Pattern = &builtIn{
 		name: "NX",
 		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee, Token_s, Token_es},
+			{Token_e},
+			{Token_e, Token_ee, Token_s, Token_es},
 		},
 	}
 
@@ -65,9 +65,9 @@ var (
 	XN Pattern = &builtIn{
 		name: "XN",
 		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee},
-			Message{Token_s, Token_se},
+			{Token_e},
+			{Token_e, Token_ee},
+			{Token_s, Token_se},
 		},
 	}
 
@@ -76,12 +76,12 @@ var (
 		name: "XK",
 		preMessages: []Message{
 			nil,
-			Message{Token_s},
+			{Token_s},
 		},
 		messages: []Message{
-			Message{Token_e, Token_es},
-			Message{Token_e, Token_ee},
-			Message{Token_s, Token_se},
+			{Token_e, Token_es},
+			{Token_e, Token_ee},
+			{Token_s, Token_se},
 		},
 	}
 
@@ -89,9 +89,9 @@ var (
 	XX Pattern = &builtIn{
 		name: "XX",
 		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee, Token_s, Token_es},
-			Message{Token_s, Token_se},
+			{Token_e},
+			{Token_e, Token_ee, Token_s, Token_es},
+			{Token_s, Token_se},
 		},
 	}
 
@@ -99,11 +99,11 @@ var (
 	KN Pattern = &builtIn{
 		name: "KN",
 		preMessages: []Message{
-			Message{Token_s},
+			{Token_s},
 		},
 		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee, Token_se},
+			{Token_e},
+			{Token_e, Token_ee, Token_se},
 		},
 	}
 
@@ -111,12 +111,12 @@ var (
 	KK Pattern = &builtIn{
 		name: "KK",
 		preMessages: []Message{
-			Message{Token_s},
-			Message{Token_s},
+			{Token_s},
+			{Token_s},
 		},
 		messages: []Message{
-			Message{Token_e, Token_es, Token_ss},
-			Message{Token_e, Token_ee, Token_se},
+			{Token_e, Token_es, Token_ss},
+			{Token_e, Token_ee, Token_se},
 		},
 	}
 
@@ -124,11 +124,11 @@ var (
 	KX Pattern = &builtIn{
 		name: "KX",
 		preMessages: []Message{
-			Message{Token_s},
+			{Token_s},
 		},
 		messages: []Message{
-			Message{Token_e},
-			Message{Token_e, Token_ee, Token_se, Token_s, Token_es},
+			{Token_e},
+			{Token_e, Token_ee, Token_se, Token_s, Token_es},
 		},
 	}
 
@@ -136,8 +136,8 @@ var (
 	IN Pattern = &builtIn{
 		name: "IN",
 		messages: []Message{
-			Message{Token_e, Token_s},
-			Message{Token_e, Token_ee, Token_se},
+			{Token_e, Token_s},
+			{Token_e, Token_ee, Token_se},
 		},
 	}
 
@@ -146,11 +146,11 @@ var (
 		name: "IK",
 		preMessages: []Message{
 			nil,
-			Message{Token_s},
+			{Token_s},
 		},
 		messages: []Message{
-			Message{Token_e, Token_es, Token_s, Token_ss},
-			Message{Token_e, Token_ee, Token_se},
+			{Token_e, Token_es, Token_s, Token_ss},
+			{Token_e, Token_ee, Token_se},
 		},
 	}
 
@@ -158,8 +158,8 @@ var (
 	IX Pattern = &builtIn{
 		name: "IX",
 		messages: []Message{
-			Message{Token_e, Token_s},
-			Message{Token_e, Token_ee, Token_se, Token_s, Token_es},
+			{Token_e, Token_s},
+			{Token_e, Token_ee, Token_se, Token_s, Token_es},
 		},
 	}
 
