@@ -67,22 +67,12 @@ type Rekeyable interface {
 	Rekey(k []byte) []byte
 }
 
-// Resetable is the interface implemented by `crypto/cipher.AEAD` instances
-// that are capable of sanitizing themselves.
-type Resetable interface {
-	// Reset clears the object of sensitive data.
-	Reset()
-}
-
 // FromString returns a Cipher by algorithm name, or nil.
 func FromString(s string) Cipher {
 	return supportedCiphers[s]
 }
 
 // ChaChaPoly is the ChaChaPoly cipher functions.
-//
-// Note: Due to upstream limitiations, key sanitization is currently not
-// supported.
 var ChaChaPoly Cipher = &cipherChaChaPoly{}
 
 type cipherChaChaPoly struct{}
@@ -104,8 +94,7 @@ func (ci *cipherChaChaPoly) EncodeNonce(nonce uint64) []byte {
 // AESGCM is the AESGCM cipher functions.
 //
 // Note: This Cipher implementation is always constant time, even on systems
-// where the Go runtime library's is not.  Due to runrime library limitiations,
-// key sanitization is currently not universally supported.
+// where the Go runtime library's is not.
 var AESGCM Cipher = &cipherAesGcm{}
 
 type cipherAesGcm struct{}

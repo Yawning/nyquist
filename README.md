@@ -16,13 +16,11 @@ Protocol Framework specification.
 As of revision 34 of the specification, the only standard functionality
 that is NOT implemented is "10.2. The `fallback` modifier".
 
-Care is taken to attempt to sanitize private key material from memory where
-possible, however due to limitations in `crypto/cipher.AEAD`, `x/crypto/hkdf`,
-`crypto/hmac`, and all of the hash functions, this is not particularly
-comprehensive.  In general given the current Go implementation(s), this
-is somewhat of a lost cause (copies on stack growth, no `memset_s`, etc),
-but the mindset taken here is "partial sanitization is better than no
-sanitization".
+This package used to make a partial attempt to sanitize key material, but
+the author is now convinced that it is fundementally a lost cause due to
+several reasons including but not limited to copies on stack growth, the
+lack of a `memset_s` equivalent, and lack of support by most cryptographic
+primitives.  And no, memguard is not a good solution either.
 
 This package will `panic` only if invariants are violated.  Under normal
 use this situation should not occur ("normal" being defined as, "Yes, it

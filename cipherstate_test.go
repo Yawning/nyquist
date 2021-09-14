@@ -140,8 +140,6 @@ func testCipherStateRekey(t *testing.T) {
 }
 
 func testCipherStateReset(t *testing.T) {
-	// The main purpose of this test is to exercise the code that invokes
-	// cipher.Resetable().
 	require := require.New(t)
 	cs := newCipherState(cipher.DeoxysII, DefaultMaxMessageSize)
 

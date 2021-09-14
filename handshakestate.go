@@ -39,7 +39,6 @@ import (
 	"gitlab.com/yawning/nyquist.git/cipher"
 	"gitlab.com/yawning/nyquist.git/dh"
 	"gitlab.com/yawning/nyquist.git/hash"
-	"gitlab.com/yawning/nyquist.git/internal"
 	"gitlab.com/yawning/nyquist.git/pattern"
 )
 
@@ -260,7 +259,7 @@ func (hs *HandshakeState) GetStatus() *HandshakeStatus {
 	return hs.status
 }
 
-// Reset clears the HandshakeState of sensitive data.
+// Reset clears the HandshakeState, to prevent future calls.
 //
 // Warning: If either of the local keypairs were provided by the
 // HandshakeConfig, they will be left intact.
@@ -271,11 +270,11 @@ func (hs *HandshakeState) Reset() {
 	}
 	if hs.s != nil && hs.s != hs.cfg.LocalStatic {
 		// Having a local static key, that isn't from the config currently can't
-		// happen, but having the sanitization is harmless.
-		hs.s.Reset()
+		// happen, but this is harmless.
+		hs.s.DropPrivate()
 	}
 	if hs.e != nil && hs.e != hs.cfg.LocalEphemeral {
-		hs.e.Reset()
+		hs.e.DropPrivate()
 	}
 	// TODO: Should this set hs.status.Err?
 }
@@ -364,7 +363,6 @@ func (hs *HandshakeState) onTokenEE() {
 		return
 	}
 	hs.ss.MixKey(eeBytes)
-	internal.ExplicitBzero(eeBytes)
 }
 
 func (hs *HandshakeState) onTokenES() {
@@ -378,7 +376,6 @@ func (hs *HandshakeState) onTokenES() {
 		return
 	}
 	hs.ss.MixKey(esBytes)
-	internal.ExplicitBzero(esBytes)
 }
 
 func (hs *HandshakeState) onTokenSE() {
@@ -392,7 +389,6 @@ func (hs *HandshakeState) onTokenSE() {
 		return
 	}
 	hs.ss.MixKey(seBytes)
-	internal.ExplicitBzero(seBytes)
 }
 
 func (hs *HandshakeState) onTokenSS() {
@@ -401,7 +397,6 @@ func (hs *HandshakeState) onTokenSS() {
 		return
 	}
 	hs.ss.MixKey(ssBytes)
-	internal.ExplicitBzero(ssBytes)
 }
 
 func (hs *HandshakeState) onTokenPsk() {

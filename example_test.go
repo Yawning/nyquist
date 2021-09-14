@@ -82,7 +82,7 @@ func TestExample(t *testing.T) {
 	require.NoError(err, "NewHandshake(bobCfg")
 
 	// Ensuring that HandshakeState.Reset() is called, will make sure that
-	// sensitive key material is properly sanitized as much as possible.
+	// the HandshakeState isn't inadvertently reused.
 	defer aliceHs.Reset()
 	defer bobHs.Reset()
 

@@ -35,7 +35,6 @@ import (
 	"math"
 
 	"gitlab.com/yawning/nyquist.git/cipher"
-	"gitlab.com/yawning/nyquist.git/internal"
 )
 
 const (
@@ -177,25 +176,20 @@ func (cs *CipherState) Rekey() error {
 		newKey = cs.aead.Seal(nil, nonce, zeroes[:], nil)
 
 		// "defaults to returning the first 32 bytes"
-		newKey = truncateTo32Bytes(newKey)
+		newKey = truncateTo32BytesMax(newKey)
 	}
 
 	err := cs.setKey(newKey)
-	internal.ExplicitBzero(newKey)
 
 	return err
 }
 
-// Reset clears the CipherState of sensitive data.
+// Reset sets the CipherState to a un-keyed state.
 func (cs *CipherState) Reset() {
 	if cs.k != nil {
-		internal.ExplicitBzero(cs.k)
 		cs.k = nil
 	}
 	if cs.aead != nil {
-		if resetter, ok := (cs.aead).(cipher.Resetable); ok {
-			resetter.Reset()
-		}
 		cs.aead = nil
 		cs.aeadOverhead = 0
 	}

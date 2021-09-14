@@ -39,8 +39,6 @@ import (
 
 	"github.com/oasisprotocol/curve25519-voi/primitives/x25519"
 	"gitlab.com/yawning/x448.git"
-
-	"gitlab.com/yawning/nyquist.git/internal"
 )
 
 var (
@@ -90,8 +88,8 @@ type Keypair interface {
 	encoding.BinaryMarshaler
 	encoding.BinaryUnmarshaler
 
-	// Reset clears the object of sensitive data.
-	Reset()
+	// DropPrivate discards the private key.
+	DropPrivate()
 
 	// Public returns the public key of the keypair.
 	Public() PublicKey
@@ -199,9 +197,11 @@ func (kp *Keypair25519) DH(publicKey PublicKey) ([]byte, error) {
 	return sharedSecret[:], nil
 }
 
-// Reset clears the keypair of sensitive data.
-func (kp *Keypair25519) Reset() {
-	internal.ExplicitBzero(kp.rawPrivateKey[:])
+// DropPrivate discards the private key.
+func (kp *Keypair25519) DropPrivate() {
+	for i := range kp.rawPrivateKey {
+		kp.rawPrivateKey[i] = 0
+	}
 }
 
 // PublicKey25519 is a X25519 public key.
@@ -320,9 +320,11 @@ func (kp *Keypair448) DH(publicKey PublicKey) ([]byte, error) {
 	return sharedSecret[:], nil
 }
 
-// Reset clears the keypair of sensitive data.
-func (kp *Keypair448) Reset() {
-	internal.ExplicitBzero(kp.rawPrivateKey[:])
+// DropPrivate discards the private key.
+func (kp *Keypair448) DropPrivate() {
+	for i := range kp.rawPrivateKey {
+		kp.rawPrivateKey[i] = 0
+	}
 }
 
 // PublicKey448 is a X448 public key.

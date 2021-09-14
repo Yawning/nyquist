@@ -30,11 +30,7 @@
 // Package nyquist implements the Noise Protocol Framework.
 package nyquist // import "gitlab.com/yawning/nyquist.git"
 
-import (
-	"errors"
-
-	"gitlab.com/yawning/nyquist.git/internal"
-)
+import "errors"
 
 // Version is the revision of the Noise specification implemented.
 const Version = 34
@@ -66,14 +62,10 @@ var (
 	ErrProtocolNotSupported = errors.New("nyquist: protocol not supported")
 )
 
-func truncateTo32Bytes(b []byte) []byte {
+func truncateTo32BytesMax(b []byte) []byte {
 	if len(b) <= 32 {
 		return b
 	}
 
-	var tail []byte
-	b, tail = b[:32], b[32:]
-	internal.ExplicitBzero(tail)
-
-	return b
+	return b[:32]
 }

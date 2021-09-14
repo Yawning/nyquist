@@ -36,7 +36,6 @@ import (
 
 	"gitlab.com/yawning/nyquist.git/cipher"
 	"gitlab.com/yawning/nyquist.git/hash"
-	"gitlab.com/yawning/nyquist.git/internal"
 )
 
 // SymmetricState encapsulates all symmetric cryptography used by the Noise
@@ -79,10 +78,8 @@ func (ss *SymmetricState) MixKey(inputKeyMaterial []byte) {
 	tempK := make([]byte, ss.hashLen)
 
 	ss.hkdfHash(inputKeyMaterial, ss.ck, tempK)
-	tempK = truncateTo32Bytes(tempK)
+	tempK = truncateTo32BytesMax(tempK)
 	ss.cs.InitializeKey(tempK)
-
-	internal.ExplicitBzero(tempK)
 }
 
 // MixHash mixes the provided data with the handshake hash.
@@ -91,8 +88,6 @@ func (ss *SymmetricState) MixHash(data []byte) {
 	_, _ = h.Write(ss.h)
 	_, _ = h.Write(data)
 	ss.h = h.Sum(ss.h[:0])
-
-	h.Reset()
 }
 
 // MixKeyAndHash mises the provided material with the chaining key, and mixes
@@ -102,10 +97,8 @@ func (ss *SymmetricState) MixKeyAndHash(inputKeyMaterial []byte) {
 
 	ss.hkdfHash(inputKeyMaterial, ss.ck, tempH, tempK)
 	ss.MixHash(tempH)
-	tempK = truncateTo32Bytes(tempK)
+	tempK = truncateTo32BytesMax(tempK)
 	ss.cs.InitializeKey(tempK)
-
-	internal.ExplicitBzero(tempK)
 }
 
 // GetHandshakeHash returns the handshake hash `h`.
@@ -145,15 +138,12 @@ func (ss *SymmetricState) Split() (*CipherState, *CipherState) {
 	tempK1, tempK2 := make([]byte, ss.hashLen), make([]byte, ss.hashLen)
 
 	ss.hkdfHash(nil, tempK1, tempK2)
-	tempK1 = truncateTo32Bytes(tempK1)
-	tempK2 = truncateTo32Bytes(tempK2)
+	tempK1 = truncateTo32BytesMax(tempK1)
+	tempK2 = truncateTo32BytesMax(tempK2)
 
 	c1, c2 := newCipherState(ss.cipher, ss.cs.maxMessageSize), newCipherState(ss.cipher, ss.cs.maxMessageSize)
 	c1.InitializeKey(tempK1)
 	c2.InitializeKey(tempK2)
-
-	internal.ExplicitBzero(tempK1)
-	internal.ExplicitBzero(tempK2)
 
 	return c1, c2
 }
@@ -185,13 +175,13 @@ func (ss *SymmetricState) hkdfHash(inputKeyMaterial []byte, outputs ...[]byte) {
 	}
 }
 
-// Reset clears the SymmetricState of sensitive data.
+// Reset clears the SymmetricState, to prevent future calls.
+//
+// Warning: The transcript hash (`h`) is left intact to allow for clearing
+// this state as early as possible, while preserving the ability to call
+// `GetHandshakeHash`.
 func (ss *SymmetricState) Reset() {
-	// `ss.h` is not sensitive, and not explicitly clearing it allows
-	// `Reset()` to be called immediately after `Split()` while preserving
-	// the ability to call `GetHandshakeHash()`.
 	if ss.ck != nil {
-		internal.ExplicitBzero(ss.ck)
 		ss.ck = nil
 	}
 	if ss.cs != nil {
