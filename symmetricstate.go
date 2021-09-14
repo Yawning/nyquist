@@ -55,7 +55,7 @@ type SymmetricState struct {
 	hashLen int
 }
 
-// InitializeSymmetric initializes the SymmetricSatate with the initial
+// InitializeSymmetric initializes the SymmetricState with the initial
 // chaining key and handshake hash, based on the protocol name.
 func (ss *SymmetricState) InitializeSymmetric(protocolName []byte) {
 	if len(protocolName) <= ss.hashLen {
