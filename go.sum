@@ -14,8 +14,8 @@ gitlab.com/yawning/bsaes.git v0.0.0-20190805113838-0a714cd429ec h1:FpfFs4EhNehiV
 gitlab.com/yawning/bsaes.git v0.0.0-20190805113838-0a714cd429ec/go.mod h1:BZ1RAoRPbCxum9Grlv5aeksu2H8BiKehBYooU2LFiOQ=
 gitlab.com/yawning/slice.git v0.0.0-20190714152416-bc4ae2510529 h1:GeSIG/kLmenUveo0XvlLXXtcKDeeItKA8iFnf0osNfg=
 gitlab.com/yawning/slice.git v0.0.0-20190714152416-bc4ae2510529/go.mod h1:sgaKGjNNjAAVrZvQQhE3oYIbnFZVaCBE2T7PmbpKJ4U=
-gitlab.com/yawning/x448.git v0.0.0-20190810030840-dcc677c7bddf h1:K/rnJnkqE5LrwaXEzEhDqKZcs4bmQVOFTbPDNIn9Qpc=
-gitlab.com/yawning/x448.git v0.0.0-20190810030840-dcc677c7bddf/go.mod h1:h91j3yLdf1F2/yqd9TRRiJcDaO149w0AzBpYLQE3yQI=
+gitlab.com/yawning/x448.git v0.0.0-20211010103852-8630503de309 h1:iTUcr+rPtfGcOQPPe+r8RLIH1AWvqd3+9JG4sqtBdNA=
+gitlab.com/yawning/x448.git v0.0.0-20211010103852-8630503de309/go.mod h1:BC2R0OW0tAYTMNLB4UMXwkk7WKokoDZP5n73hyLPyCo=
 golang.org/x/crypto v0.0.0-20210813211128-0a44fdfbc16e h1:VvfwVmMH40bpMeizC9/K7ipM5Qjucuu16RWfneFPyhQ=
 golang.org/x/crypto v0.0.0-20210813211128-0a44fdfbc16e/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/net v0.0.0-20210226172049-e18ecbb05110/go.mod h1:m0MpNAwzfU5UDzcl9v0D8zg8gWTRqZa9RBIspLL5mdg=
