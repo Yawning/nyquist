@@ -36,7 +36,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/oasislabs/deoxysii"
+	"github.com/oasisprotocol/deoxysii"
 	"gitlab.com/yawning/bsaes.git"
 	"golang.org/x/crypto/chacha20poly1305"
 )
