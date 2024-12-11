@@ -8,5 +8,5 @@ require (
 	github.com/stretchr/testify v1.8.0
 	gitlab.com/yawning/bsaes.git v0.0.0-20190805113838-0a714cd429ec
 	gitlab.com/yawning/x448.git v0.0.0-20221003101044-617eb9b7d9b7
-	golang.org/x/crypto v0.17.0
+	golang.org/x/crypto v0.31.0
 )
