@@ -37,8 +37,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/oasisprotocol/curve25519-voi/primitives/x25519"
 	"gitlab.com/yawning/x448.git"
+	"golang.org/x/crypto/curve25519"
 )
 
 var (
@@ -126,7 +126,7 @@ func (dh *dh25519) GenerateKeypair(rng io.Reader) (Keypair, error) {
 		return nil, err
 	}
 
-	x25519.ScalarBaseMult(&kp.publicKey.rawPublicKey, &kp.rawPrivateKey)
+	curve25519.ScalarBaseMult(&kp.publicKey.rawPublicKey, &kp.rawPrivateKey)
 
 	return &kp, nil
 }
@@ -173,7 +173,7 @@ func (kp *Keypair25519) UnmarshalBinary(data []byte) error {
 	}
 
 	copy(kp.rawPrivateKey[:], data)
-	x25519.ScalarBaseMult(&kp.publicKey.rawPublicKey, &kp.rawPrivateKey)
+	curve25519.ScalarBaseMult(&kp.publicKey.rawPublicKey, &kp.rawPrivateKey)
 
 	return nil
 }
@@ -201,7 +201,7 @@ func (kp *Keypair25519) DH(publicKey PublicKey) ([]byte, error) {
 	// > complexity and implementation variance, and does not improve security. This behavior is
 	// > allowed because it might match the behavior of some software.
 	var sharedSecret [32]byte
-	x25519.ScalarMult(&sharedSecret, &kp.rawPrivateKey, &pubKey.rawPublicKey) //nolint:staticcheck
+	curve25519.ScalarMult(&sharedSecret, &kp.rawPrivateKey, &pubKey.rawPublicKey) //nolint:staticcheck
 
 	return sharedSecret[:], nil
 }
